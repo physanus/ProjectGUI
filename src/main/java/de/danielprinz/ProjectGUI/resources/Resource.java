@@ -1,30 +1,24 @@
 package de.danielprinz.ProjectGUI.resources;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.Image;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Resource {
 
-    private File file;
-
-    public Resource(File file) {
-        this.file = file;
+    InputStream resourceAsStream;
+    public Resource(InputStream resourceAsStream) {
+        this.resourceAsStream = resourceAsStream;
     }
-    public Resource(String fileString) {
-        this.file = new File(fileString);
-    }
-
 
     /**
      * Converts a buffered image into a JavaFX-compatible Image
      * @return The JavaFX compatible image
      */
-    public WritableImage convertToImage() throws IOException {
-        return SwingFXUtils.toFXImage(ImageIO.read(file), null);
+    public Image convertToImage() {
+        //return SwingFXUtils.toFXImage(ImageIO.read(resourceAsStream), null);
+        return new Image(resourceAsStream);
     }
 
 }

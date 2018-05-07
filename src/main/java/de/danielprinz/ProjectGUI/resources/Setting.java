@@ -19,7 +19,7 @@ public enum Setting {
      * @return The file
      */
     public Resource getResource() {
-        return new Resource(Main.getInstance().getClass().getResource(getValue()).getFile().replaceAll("%20", " "));
+        return new Resource(Main.class.getResourceAsStream(getValue()));
     }
 
 }
