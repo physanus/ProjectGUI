@@ -9,5 +9,8 @@
         <module name="ProjectGUI" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ProjectGUI" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
