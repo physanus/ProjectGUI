@@ -2,12 +2,12 @@ package de.danielprinz.ProjectGUI.resources;
 
 import de.danielprinz.ProjectGUI.Main;
 
-public enum Setting {
+public enum Settings {
 
     ICON("plotter.png");
 
     String s;
-    Setting(String s) {
+    Settings(String s) {
         this.s = s;
     }
     public String getValue() {
@@ -21,5 +21,6 @@ public enum Setting {
     public Resource getResource() {
         return new Resource(Main.class.getResourceAsStream(getValue()));
     }
+
 
 }

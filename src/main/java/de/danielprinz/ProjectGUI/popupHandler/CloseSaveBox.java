@@ -1,6 +1,7 @@
 package de.danielprinz.ProjectGUI.popupHandler;
 
-import de.danielprinz.ProjectGUI.resources.Setting;
+import de.danielprinz.ProjectGUI.resources.Strings;
+import de.danielprinz.ProjectGUI.resources.Settings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,9 +23,9 @@ public class CloseSaveBox {
         window.initModality(Modality.APPLICATION_MODAL);
         //window.initStyle(StageStyle.DECORATED); // UTILITY
         try {
-            window.getIcons().add(Setting.ICON.getResource().convertToImage());
+            window.getIcons().add(Settings.ICON.getResource().convertToImage());
         } catch (NullPointerException e) {
-            System.err.println("Das angegebene Icon konnte nicht gefunden werden: " + Setting.ICON);
+            System.err.println(Strings.ICON_NOT_FOUND.format(Settings.ICON));
         }
         window.setTitle(title);
         window.setMinWidth(250);
@@ -41,9 +42,9 @@ public class CloseSaveBox {
         gridPane.setHgap(10);
 
         //Create two buttons
-        Button saveButton = new Button("Speichern");
-        Button nosaveButton = new Button("Nicht speichern");
-        Button cancelButton = new Button("Abbrechen");
+        Button saveButton = new Button(Strings.SAVE_CHANGES_ANSWER_YES.format());
+        Button nosaveButton = new Button(Strings.SAVE_CHANGES_ANSWER_NO.format());
+        Button cancelButton = new Button(Strings.SAVE_CHANGES_ANSWER_CANCEL.format());
 
         //Clicking will set answer and close window
         saveButton.setOnAction(e -> {
