@@ -3,19 +3,25 @@ package de.danielprinz.ProjectGUI;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
+import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
+import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.Settings;
 import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 
 
 public class Main extends Application {
@@ -60,13 +66,41 @@ public class Main extends Application {
         GridPane.setConstraints(menuBar, 0, 0);
         //File menu
         Menu fileMenu = new Menu(Strings.MENUBAR_FILE.format());
-        MenuItem load = new MenuItem(Strings.MENUBAR_LOAD.format());
-        load.setOnAction(e -> {
-            // TODO
+        MenuItem open = new MenuItem(Strings.MENUBAR_OPEN.format());
+        open.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(Strings.MENUBAR_OPEN.format());
+            // TODO to configure
+            //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("image", "*.jpg"));
+            File file = fileChooser.showOpenDialog(window);
+            if(file == null) {
+                // no file was selected/dialog was cancelled
+                FileErrorBox.display(FileErrorType.NO_SUCH_FILE, WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
+                return;
+            }
+
+            System.out.println(file == null ? "null" : file.getAbsolutePath());
+            openFileHandler.read(file);
+
         });
         MenuItem save = new MenuItem(Strings.MENUBAR_SAVEAS.format());
         save.setOnAction(e -> {
-            // TODO
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(Strings.MENUBAR_OPEN.format());
+            // TODO to configure
+            //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("image", "*.jpg"));
+            File file = fileChooser.showOpenDialog(window);
+            if(file == null) {
+                // no file was selected/dialog was cancelled
+                FileErrorBox.display(FileErrorType.NO_SUCH_FILE, WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
+                return;
+            }
+
+            System.out.println(file == null ? "null" : file.getAbsolutePath());
+            openFileHandler.save();
+
+
         });
         MenuItem settings = new MenuItem(Strings.MENUBAR_SETTINGS.format());
         settings.setOnAction(e -> {
@@ -76,7 +110,7 @@ public class Main extends Application {
         MenuItem close = new MenuItem(Strings.MENUBAR_CLOSE.format());
         close.setOnAction(e -> close());
 
-        fileMenu.getItems().addAll(load, save, settings, new SeparatorMenuItem(), close);
+        fileMenu.getItems().addAll(open, save, settings, new SeparatorMenuItem(), close);
 
         menuBar.getMenus().addAll(fileMenu);
 

@@ -3,14 +3,16 @@ package de.danielprinz.ProjectGUI.files;
 import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
+import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
+import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.Strings;
 
-import java.io.File;
+import java.io.*;
 
 public class OpenFileHandler {
 
     private File openFile;
-    private boolean isSaved = false;
+    private boolean isSaved = true;
 
     public OpenFileHandler(File openFile) {
         this.openFile = openFile;
@@ -18,14 +20,36 @@ public class OpenFileHandler {
 
     public void save(CloseSaveBoxResult result) {
         if(!result.equals(CloseSaveBoxResult.SAVE)) return;
-
-        // TODO save current document
+        save();
+    }
+    public void save() {
         System.out.println("saving...");
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(openFile))) {
+            // TODO save current document
+            /*for(;;) {
+
+            }*/
+        } catch (IOException e) {
             e.printStackTrace();
+            FileErrorBox.display(FileErrorType.WRITE_ERROR, "", "");
         }
+    }
+
+    public void read(File file) {
+        this.openFile = file;
+
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(openFile))) {
+            // lets try to read the file.
+            String line;
+            while((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                // TODO read and process the file
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
     }
 
 
