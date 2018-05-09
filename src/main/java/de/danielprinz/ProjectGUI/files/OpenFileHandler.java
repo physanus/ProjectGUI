@@ -32,7 +32,7 @@ public class OpenFileHandler {
             }*/
         } catch (IOException e) {
             e.printStackTrace();
-            FileErrorBox.display(FileErrorType.WRITE_ERROR, "", "");
+            FileErrorBox.display(FileErrorType.WRITE_ERROR, Main.WINDOW_TITLE, Strings.FILE_WRITE_ERROR.format());
         }
     }
 
@@ -48,6 +48,7 @@ public class OpenFileHandler {
             }
         } catch (IOException e1) {
             e1.printStackTrace();
+            FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
         }
 
     }
