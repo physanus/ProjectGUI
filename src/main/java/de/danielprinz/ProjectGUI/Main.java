@@ -1,7 +1,7 @@
 package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
-import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
+import de.danielprinz.ProjectGUI.io.ConnectionHandler;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
@@ -9,7 +9,6 @@ import de.danielprinz.ProjectGUI.resources.Settings;
 import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -19,9 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 
 
 public class Main extends Application {
@@ -35,6 +32,7 @@ public class Main extends Application {
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
+    private static ConnectionHandler connectionHandler;
 
     public static void main(String[] args) {
         launch(args);
@@ -45,6 +43,7 @@ public class Main extends Application {
 
         instance = this;
         openFileHandler = new OpenFileHandler(new File("hi.png")); // TODO call when file is opened
+        connectionHandler = new ConnectionHandler();
 
         window = primaryStage;
         window.setTitle(WINDOW_TITLE);
@@ -121,6 +120,10 @@ public class Main extends Application {
         window.setScene(scene);
         window.show();
 
+
+        // Connect to the serial device, TODO: move to a ui-button
+        connectionHandler.connect("COM5");
+
     }
 
     private void close() {
@@ -136,5 +139,29 @@ public class Main extends Application {
 
     public static Main getInstance() {
         return instance;
+    }
+
+
+    /**
+     * Adds the given line to a text->scrollPane
+     * @param line The line
+     */
+    public static void addToCmdWindow(String line) {
+        // TODO implement
+        //Platform.runLater(() -> text.setText(text.getText().equals("") ? text.getText() + line : text.getText() + "\n" + line));
+        //scrollPane.setVvalue(1); // scroll to the bottom
+        System.out.println("DEBUG: " + line);
+    }
+
+    /**
+     * Clears the text of the cmdWindow
+     */
+    public static void clearCmdWindow() {
+        //Platform.runLater(() -> text.setText(""));
+    }
+
+
+    public static ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
     }
 }
