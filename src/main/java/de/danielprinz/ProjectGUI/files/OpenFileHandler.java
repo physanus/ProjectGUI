@@ -8,10 +8,12 @@ import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.Strings;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class OpenFileHandler {
 
     private File openFile;
+    private ArrayList<String> fileContent = new ArrayList<>();
     private boolean isSaved = true;
 
     public OpenFileHandler(File openFile) {
@@ -43,8 +45,8 @@ public class OpenFileHandler {
             // lets try to read the file.
             String line;
             while((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-                // TODO read and process the file
+                if(line.equals("")) continue;
+                this.fileContent.add(line);
             }
         } catch (IOException e1) {
             e1.printStackTrace();
