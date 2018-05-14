@@ -18,7 +18,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sun.rmi.runtime.NewThreadAction;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -136,7 +135,6 @@ public class Main extends Application {
         fileMenu.getItems().addAll(open, save, settings, new SeparatorMenuItem(), close);
 
         menuBar.getMenus().addAll(fileMenu);
-
 
         mainPane.getChildren().addAll(menuBar);
 
