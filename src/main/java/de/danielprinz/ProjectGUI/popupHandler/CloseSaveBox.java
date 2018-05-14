@@ -1,7 +1,7 @@
 package de.danielprinz.ProjectGUI.popupHandler;
 
+import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import de.danielprinz.ProjectGUI.resources.Strings;
-import de.danielprinz.ProjectGUI.resources.Settings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,11 +22,9 @@ public class CloseSaveBox {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         //window.initStyle(StageStyle.DECORATED); // UTILITY
-        try {
-            window.getIcons().add(Settings.ICON.getResource().convertToImage());
-        } catch (NullPointerException e) {
-            System.err.println(Strings.ICON_NOT_FOUND.format(Settings.ICON));
-        }
+        if(SettingsHandler.checkAvailableResources())
+            window.getIcons().add(SettingsHandler.APP_ICON);
+
         window.setTitle(title);
         window.setMinWidth(250);
         Label label = new Label();

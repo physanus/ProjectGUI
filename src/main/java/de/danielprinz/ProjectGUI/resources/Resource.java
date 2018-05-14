@@ -17,6 +17,7 @@ public class Resource {
      * @return The JavaFX compatible image
      */
     public Image convertToImage() {
+        if(resourceAsStream == null) return null;
         //return SwingFXUtils.toFXImage(ImageIO.read(resourceAsStream), null);
         return new Image(resourceAsStream);
     }

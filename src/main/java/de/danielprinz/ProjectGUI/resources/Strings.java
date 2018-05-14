@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 
 public enum Strings {
 
-    ICON_NOT_FOUND("Das angegebene Icon konnte nicht gefunden werden: {0}"),
+    RESOURCE_NOT_FOUND("The specified resource could not be found: {0}"),
 
     MENUBAR_FILE("File"),
         MENUBAR_OPEN("Open"),

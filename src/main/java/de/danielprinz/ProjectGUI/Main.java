@@ -2,10 +2,11 @@ package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
+import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
-import de.danielprinz.ProjectGUI.resources.Settings;
+import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -41,17 +42,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        SettingsHandler.checkAvailableResources();
+
         instance = this;
         openFileHandler = new OpenFileHandler(new File("hi.png")); // TODO call when file is opened
         connectionHandler = new ConnectionHandler();
 
         window = primaryStage;
         window.setTitle(WINDOW_TITLE);
-        try {
-            window.getIcons().add(Settings.ICON.getResource().convertToImage());
-        } catch (NullPointerException e) {
-            System.err.println(Strings.ICON_NOT_FOUND.format(Settings.ICON));
-        }
+        if(SettingsHandler.checkAvailableResources())
+            window.getIcons().add(SettingsHandler.APP_ICON);
+
         window.setOnCloseRequest(e -> {
             e.consume();
             close();
