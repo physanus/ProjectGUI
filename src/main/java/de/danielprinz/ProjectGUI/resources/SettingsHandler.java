@@ -19,7 +19,7 @@ public class SettingsHandler {
      * @return The resource
      */
     public static Resource getResourceByString(String path) throws NullPointerException {
-        return new Resource(Main.class.getResourceAsStream("/a" + path));
+        return new Resource(Main.class.getResourceAsStream("/" + path));
     }
 
     public static boolean checkAvailableResources() {
