@@ -52,6 +52,12 @@ public class SerializedCommands {
         return result;
     }
 
+    /**
+     * Scales the points to the specifies width and height. Image ratio will be kept.
+     * @param maxWidth The maximum width
+     * @param maxHeight The maximum height
+     * @return The new image dimensions [x,y]
+     */
     public int[] scale(int maxWidth, int maxHeight) {
         int[] dimensions = getBoundingDimensions();
         int dimX = dimensions[0];
