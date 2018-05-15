@@ -84,8 +84,9 @@ public class OpenFileHandler {
      * @throws UnsupportedFileTypeException Thrown in case the file contains statements the parser cannot interpret
      * @param maxWidth Specifies the maximum width of th resulting buffered image
      * @param maxHeight Specifies the maximum height of th resulting buffered image
+     * @param background Whether to paint a background or keep it transparent. true = background, false = transparent
      */
-    public BufferedImage renderImage(int maxWidth, int maxHeight) throws UnsupportedFileTypeException {
+    public BufferedImage renderImage(int maxWidth, int maxHeight, boolean background) throws UnsupportedFileTypeException {
 
         SerializedCommands serialized = serialize();
         int[] dimensions = serialized.scale(maxWidth, maxHeight);
@@ -94,6 +95,10 @@ public class OpenFileHandler {
 
         BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
+        if(background) {
+            graphics.setPaint(new Color(244, 244, 244));
+            graphics.fillRect(0, 0, imageWidth, imageHeight);
+        }
         graphics.setColor(Color.BLACK);
 
         Command oldCommand = null;
@@ -173,4 +178,41 @@ public class OpenFileHandler {
         return result;
     }
 
+    /*public DrawingArea drawCanvas(int maxWidth, int maxHeight) throws UnsupportedFileTypeException {
+
+        SerializedCommands serialized = serialize();
+        int[] dimensions = serialized.scale(maxWidth, maxHeight);
+        int imageWidth = dimensions[0];
+        int imageHeight = dimensions[1];
+
+        DrawingArea drawingArea = new DrawingArea(imageWidth, imageHeight);
+        GraphicsContext graphicsContext = drawingArea.getGraphicsContext2D();
+        graphicsContext.setFill(Color.BLACK);
+
+        Command oldCommand = null;
+        for(Command command : serialized.getValues()) {
+            // bufferedImage: (0, 0) is at the top left
+            // command:       (0, 0) is at the bottom left
+
+            if(oldCommand == null) {
+                oldCommand = command;
+                continue;
+            }
+
+            if(command.getCommandType().equals(CommandType.PD)) {
+                // TL = top left oriented dimensions
+                // we need to convert them from BL to TL
+                int xOldTL = oldCommand.getX();
+                int yOldTL = imageHeight - oldCommand.getY();
+                int xTL = command.getX();
+                int yTL = imageHeight - command.getY();
+                drawingArea.add(xOldTL, yOldTL, xTL, yTL);
+            }
+            drawingArea.draw();
+
+            oldCommand = command;
+        }
+
+        return drawingArea;
+    }*/
 }

@@ -18,6 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -35,6 +36,7 @@ public class Main extends Application {
 
     private static Stage window;
     private static MenuBar menuBar;
+    private static ImageView preview;
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
@@ -88,10 +90,10 @@ public class Main extends Application {
                 return;
             }
 
-            openFileHandler.read(file);
+            openFileHandler.read(file); // TODO make async
             BufferedImage bufferedImage;
             try {
-                bufferedImage = openFileHandler.renderImage(500, 500);
+                bufferedImage = openFileHandler.renderImage(500, 500, true);
                 ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
                 GridPane.setConstraints(imageView, 0, 1);
                 Platform.runLater(() -> mainPane.getChildren().add(imageView));
@@ -125,12 +127,25 @@ public class Main extends Application {
 
         MenuItem close = new MenuItem(Strings.MENUBAR_CLOSE.format());
         close.setOnAction(e -> close());
-
         fileMenu.getItems().addAll(open, save, settings, new SeparatorMenuItem(), close);
-
         menuBar.getMenus().addAll(fileMenu);
 
-        mainPane.getChildren().addAll(menuBar);
+
+        ImageView draggable = new ImageView();
+        draggable.setImage(SettingsHandler.APP_ICON);
+        //preview.setOnMouseDragged(new MouseDraggedListener(preview, 20, 500, 500, 0.01));
+        Pane pane = new Pane();
+        pane.getChildren().add(draggable);
+        GridPane.setConstraints(pane, 1, 1);
+
+        preview = new ImageView();
+        preview.setFitHeight(500);
+        preview.setFitWidth(500);
+        GridPane.setConstraints(preview, 0, 1);
+
+
+
+        mainPane.getChildren().addAll(menuBar, preview, pane);
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         window.setScene(scene);
@@ -151,10 +166,12 @@ public class Main extends Application {
                 openFileHandler.read(file);
                 BufferedImage bufferedImage;
                 try {
-                    bufferedImage = openFileHandler.renderImage(500, 500);
-                    ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
-                    GridPane.setConstraints(imageView, 0, 1);
-                    Platform.runLater(() -> mainPane.getChildren().add(imageView));
+
+                    bufferedImage = openFileHandler.renderImage(500, 500, true);
+                    preview.setFitWidth(0);
+                    preview.setFitHeight(0);
+                    preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
+
                 } catch (UnsupportedFileTypeException e1) {
                     FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
                     return;
