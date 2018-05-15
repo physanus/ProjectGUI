@@ -24,4 +24,14 @@ public class Command {
         return y;
     }
 
+
+    /**
+     * Scales x and y with the specifies value. 1 = no scale, <1 smaller, >1 bigger
+     * @param x The scale for the x value
+     * @param y The scale for the y values
+     */
+    public void scale(double x, double y) {
+        this.x *= x;
+        this.y *= y;
+    }
 }

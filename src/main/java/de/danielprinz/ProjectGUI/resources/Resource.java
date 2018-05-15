@@ -2,7 +2,6 @@ package de.danielprinz.ProjectGUI.resources;
 
 import javafx.scene.image.Image;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class Resource {
@@ -18,7 +17,6 @@ public class Resource {
      */
     public Image convertToImage() {
         if(resourceAsStream == null) return null;
-        //return SwingFXUtils.toFXImage(ImageIO.read(resourceAsStream), null);
         return new Image(resourceAsStream);
     }
 

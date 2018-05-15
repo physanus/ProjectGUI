@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class OpenFileHandler {
 
@@ -82,17 +81,30 @@ public class OpenFileHandler {
      * Generates a bufferedImage from the file input
      * @return The buffered image
      * @throws UnsupportedFileTypeException Thrown in case the file contains statements the parser cannot interpret
+     * @param maxWidth Specifies the maximum width of th resulting buffered image
+     * @param maxHeight Specifies the maximum height of th resulting buffered image
      */
-    public BufferedImage renderImage() throws UnsupportedFileTypeException {
+    public BufferedImage renderImage(int maxWidth, int maxHeight) throws UnsupportedFileTypeException {
 
         ArrayList<Command> serialized = serialize();
         int[] dimensions = getBoundingDimensions(serialized);
-        int maxX = dimensions[0];
-        int maxY = dimensions[1];
-        System.out.println(maxX);
-        System.out.println(maxY);
+        int dimX = dimensions[0];
+        int dimY = dimensions[1];
+        System.out.println(dimX);
+        System.out.println(dimY);
 
-        BufferedImage bufferedImage = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_ARGB);
+        double scale = Math.min((double)maxWidth/dimX, (double)maxHeight/dimY);
+        int imageWidth = (int) (dimX * scale);
+        int imageHeight = (int) (dimY * scale);
+        double scaleX = imageWidth / (double) dimX;
+        double scaleY = imageHeight / (double) dimY;
+
+        // scale all points
+        for(Command command : serialized) {
+            command.scale(scaleX, scaleY);
+        }
+
+        BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
         graphics.setColor(Color.BLACK);
 
@@ -108,15 +120,32 @@ public class OpenFileHandler {
 
             if(command.getCommandType().equals(CommandType.PD)) {
                 // TL = top left oriented dimensions
+                // we need to convert them from BL to TL
                 int xOldTL = oldCommand.getX();
-                int yOldTL = maxY - oldCommand.getY();
+                int yOldTL = imageHeight - oldCommand.getY();
                 int xTL = command.getX();
-                int yTL = maxY - command.getY();
+                int yTL = imageHeight - command.getY();
                 graphics.drawLine(xOldTL, yOldTL, xTL, yTL);
             }
 
             oldCommand = command;
         }
+
+
+        // issue: lines are too thin
+        /*double scale = Math.max((double)maxWidth/dimX, (double)maxHeight/dimY);
+
+        int imageWidth = (int) (dimX * scale);
+        int imageHeight = (int) (dimY * scale);
+        double scaleX = imageWidth / (double) dimX;
+        double scaleY = imageHeight / (double) dimY;
+        System.out.println("scale: " + scale);
+
+        BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        AffineTransform affineTransform = new AffineTransform();
+        affineTransform.scale(scaleX, scaleY);
+        AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
+        newBufferedImage = affineTransformOp.filter(bufferedImage, newBufferedImage);*/
 
         return bufferedImage;
     }

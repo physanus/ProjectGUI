@@ -10,27 +10,27 @@ import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 
 public class Main extends Application {
 
     public static final boolean DEBUG = true;
 
-    private final static int WINDOW_WIDTH = 400;
-    private final static int WINDOW_HEIGHT = 430;
+    private final static int WINDOW_WIDTH = 800;
+    private final static int WINDOW_HEIGHT = 860;
     public final static String WINDOW_TITLE = "ProjectGUI";
 
     private static Stage window;
@@ -92,15 +92,14 @@ public class Main extends Application {
             openFileHandler.read(file);
             BufferedImage bufferedImage;
             try {
-                bufferedImage = openFileHandler.renderImage();
+                bufferedImage = openFileHandler.renderImage(500, 500);
+                ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
+                System.out.println(imageView.getFitWidth());
+                GridPane.setConstraints(imageView, 0, 1);
+                Platform.runLater(() -> mainPane.getChildren().add(imageView));
             } catch (UnsupportedFileTypeException e1) {
                 FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
                 return;
-            }
-            try {
-                ImageIO.write(bufferedImage, "PNG", new File("C:\\Users\\prinz\\ownCloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources\\test.png"));
-            } catch (IOException e1) {
-                e1.printStackTrace();
             }
 
         }).start());
@@ -149,17 +148,16 @@ public class Main extends Application {
         if(DEBUG) {
             new Thread(() -> {
                 openFileHandler.read(new File("C:\\Users\\prinz\\ownCloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources\\FH_Technikum_Wien_logo.hpgl"));
-                BufferedImage bufferedImage = null;
+                BufferedImage bufferedImage;
                 try {
-                    bufferedImage = openFileHandler.renderImage();
+                    bufferedImage = openFileHandler.renderImage(500, 500);
+                    ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
+                    System.out.println(imageView.getFitWidth());
+                    GridPane.setConstraints(imageView, 0, 1);
+                    Platform.runLater(() -> mainPane.getChildren().add(imageView));
                 } catch (UnsupportedFileTypeException e1) {
                     FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
                     return;
-                }
-                try {
-                    ImageIO.write(bufferedImage, "PNG", new File("C:\\Users\\prinz\\ownCloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources\\test.png"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
             }).start();
         }
