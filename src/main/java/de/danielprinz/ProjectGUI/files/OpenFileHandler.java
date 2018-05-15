@@ -8,6 +8,7 @@ import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.Command;
 import de.danielprinz.ProjectGUI.resources.CommandType;
+import de.danielprinz.ProjectGUI.resources.SerializedCommands;
 import de.danielprinz.ProjectGUI.resources.Strings;
 
 import java.awt.*;
@@ -86,30 +87,17 @@ public class OpenFileHandler {
      */
     public BufferedImage renderImage(int maxWidth, int maxHeight) throws UnsupportedFileTypeException {
 
-        ArrayList<Command> serialized = serialize();
-        int[] dimensions = getBoundingDimensions(serialized);
-        int dimX = dimensions[0];
-        int dimY = dimensions[1];
-        System.out.println(dimX);
-        System.out.println(dimY);
-
-        double scale = Math.min((double)maxWidth/dimX, (double)maxHeight/dimY);
-        int imageWidth = (int) (dimX * scale);
-        int imageHeight = (int) (dimY * scale);
-        double scaleX = imageWidth / (double) dimX;
-        double scaleY = imageHeight / (double) dimY;
-
-        // scale all points
-        for(Command command : serialized) {
-            command.scale(scaleX, scaleY);
-        }
+        SerializedCommands serialized = serialize();
+        int[] dimensions = serialized.scale(maxWidth, maxHeight);
+        int imageWidth = dimensions[0];
+        int imageHeight = dimensions[1];
 
         BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
         graphics.setColor(Color.BLACK);
 
         Command oldCommand = null;
-        for(Command command : serialized) {
+        for(Command command : serialized.getValues()) {
             // bufferedImage: (0, 0) is at the top left
             // command:       (0, 0) is at the bottom left
 
@@ -131,22 +119,6 @@ public class OpenFileHandler {
             oldCommand = command;
         }
 
-
-        // issue: lines are too thin
-        /*double scale = Math.max((double)maxWidth/dimX, (double)maxHeight/dimY);
-
-        int imageWidth = (int) (dimX * scale);
-        int imageHeight = (int) (dimY * scale);
-        double scaleX = imageWidth / (double) dimX;
-        double scaleY = imageHeight / (double) dimY;
-        System.out.println("scale: " + scale);
-
-        BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        AffineTransform affineTransform = new AffineTransform();
-        affineTransform.scale(scaleX, scaleY);
-        AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
-        newBufferedImage = affineTransformOp.filter(bufferedImage, newBufferedImage);*/
-
         return bufferedImage;
     }
 
@@ -156,9 +128,9 @@ public class OpenFileHandler {
      * @return The serialized content
      * @throws UnsupportedFileTypeException Thrown in case the file contains statements the parser cannot interpret
      */
-    private ArrayList<Command> serialize() throws UnsupportedFileTypeException {
+    private SerializedCommands serialize() throws UnsupportedFileTypeException {
 
-        ArrayList<Command> result = new ArrayList<>();
+        SerializedCommands result = new SerializedCommands();
         boolean error = false;
 
         for(String line : fileContent) {
@@ -197,37 +169,6 @@ public class OpenFileHandler {
 
         if(error)
             throw new UnsupportedFileTypeException();
-
-        return result;
-    }
-
-
-    /**
-     * Retrieves the bounding dimensions of the serialized content. (0, 0) is in the bottom left corner
-     * @param serialized The serialized fileContent
-     * @return [x, y]
-     */
-    private int[] getBoundingDimensions(ArrayList<Command> serialized) {
-        int[] result = {0, 0};
-        Command oldCommand = null; // we currently are at this position
-        for(Command command : serialized) { // we want to move to this position
-
-            if(oldCommand == null) {
-                oldCommand = command;
-                continue;
-            }
-
-            if(command.getCommandType().equals(CommandType.PD) || oldCommand.getCommandType().equals(CommandType.PD)) {
-                // top = x
-                if(oldCommand.getX() > result[0])
-                    result[0] = oldCommand.getX();
-                // right = y
-                if(oldCommand.getY() > result[1])
-                    result[1] = oldCommand.getY();
-            }
-
-            oldCommand = command;
-        }
 
         return result;
     }

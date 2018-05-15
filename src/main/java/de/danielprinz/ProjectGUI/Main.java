@@ -94,7 +94,6 @@ public class Main extends Application {
             try {
                 bufferedImage = openFileHandler.renderImage(500, 500);
                 ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
-                System.out.println(imageView.getFitWidth());
                 GridPane.setConstraints(imageView, 0, 1);
                 Platform.runLater(() -> mainPane.getChildren().add(imageView));
             } catch (UnsupportedFileTypeException e1) {
@@ -117,7 +116,6 @@ public class Main extends Application {
                 return;
             }
 
-            System.out.println(file.getAbsolutePath());
             openFileHandler.save();
 
         }).start());
@@ -152,7 +150,6 @@ public class Main extends Application {
                 try {
                     bufferedImage = openFileHandler.renderImage(500, 500);
                     ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
-                    System.out.println(imageView.getFitWidth());
                     GridPane.setConstraints(imageView, 0, 1);
                     Platform.runLater(() -> mainPane.getChildren().add(imageView));
                 } catch (UnsupportedFileTypeException e1) {
