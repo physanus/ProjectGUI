@@ -2,6 +2,7 @@ package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
+import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
@@ -11,6 +12,8 @@ import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -37,6 +40,7 @@ public class Main extends Application {
     private static Stage window;
     private static MenuBar menuBar;
     private static ImageView preview;
+    private static ImageView draggable;
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
@@ -130,22 +134,33 @@ public class Main extends Application {
         fileMenu.getItems().addAll(open, save, settings, new SeparatorMenuItem(), close);
         menuBar.getMenus().addAll(fileMenu);
 
-
-        ImageView draggable = new ImageView();
-        draggable.setImage(SettingsHandler.APP_ICON);
-        //preview.setOnMouseDragged(new MouseDraggedListener(preview, 20, 500, 500, 0.01));
-        Pane pane = new Pane();
-        pane.getChildren().add(draggable);
-        GridPane.setConstraints(pane, 1, 1);
+        GridPane innerPane = new GridPane();
+        innerPane.setPadding(new Insets(10, 10, 10, 10));
+        innerPane.setVgap(8);
+        innerPane.setHgap(10);
+        GridPane.setConstraints(innerPane, 0, 1);
 
         preview = new ImageView();
         preview.setFitHeight(500);
         preview.setFitWidth(500);
-        GridPane.setConstraints(preview, 0, 1);
+        GridPane.setConstraints(preview, 0, 0);
 
+        draggable = new ImageView();
+        draggable.setImage(SettingsHandler.JOYSTICK_CROSSHAIRS);
+        //draggable.setOnMouseDragged(new MouseDraggedListener(draggable, 20, 32, 32, 0.01));
+        //draggable.setOnMousePressed(new MousePressedListener(draggable, 20, 32, 32, 0.01));
+        MouseListener mouseListener = new MouseListener(draggable, 30, 0.5);
+        draggable.setOnMousePressed(mouseListener.new MouseListenerPress());
+        draggable.setOnMouseDragged(mouseListener.new MouseListenerDrag());
+        draggable.setOnMouseReleased(mouseListener.new MouseListenerReleased());
+        //draggable.setOnMouseClicked(new MouseDraggedListener(draggable,20, 32, 32, 0.01));
+        draggable.setCursor(Cursor.HAND);
+        Pane pane = new Pane(); // TODO do we need this one?
+        pane.getChildren().add(draggable);
+        GridPane.setConstraints(pane, 1, 0);
 
-
-        mainPane.getChildren().addAll(menuBar, preview, pane);
+        innerPane.getChildren().addAll(preview, pane);
+        mainPane.getChildren().addAll(menuBar, innerPane);
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         window.setScene(scene);
