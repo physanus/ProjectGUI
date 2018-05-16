@@ -94,13 +94,15 @@ public class Main extends Application {
                 return;
             }
 
-            openFileHandler.read(file); // TODO make async
+            openFileHandler.read(file);
             BufferedImage bufferedImage;
             try {
+
                 bufferedImage = openFileHandler.renderImage(500, 500, true);
-                ImageView imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
-                GridPane.setConstraints(imageView, 0, 1);
-                Platform.runLater(() -> mainPane.getChildren().add(imageView));
+                preview.setFitWidth(0);
+                preview.setFitHeight(0);
+                preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
+
             } catch (UnsupportedFileTypeException e1) {
                 FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
                 return;
