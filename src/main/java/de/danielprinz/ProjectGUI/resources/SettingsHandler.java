@@ -2,7 +2,6 @@ package de.danielprinz.ProjectGUI.resources;
 
 import de.danielprinz.ProjectGUI.Main;
 import javafx.scene.image.Image;
-import sun.security.x509.AVA;
 
 import java.lang.reflect.Field;
 
@@ -10,6 +9,7 @@ public class SettingsHandler {
 
     private static int AVAILABLE = -1;
     public static Image APP_ICON = getResourceByString("plotter.png").convertToImage();
+    public static Image JOYSTICK_CROSSHAIRS = getResourceByString("add.png").convertToImage();
 
 
 
@@ -51,6 +51,7 @@ public class SettingsHandler {
                     System.err.println(Strings.RESOURCE_NOT_FOUND.format(field.getName()));
                     result = false;
                 }
+
 
                 // Set value
                 //field.set(null, Boolean.TRUE);
