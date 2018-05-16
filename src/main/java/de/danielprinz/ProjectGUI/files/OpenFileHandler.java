@@ -85,7 +85,7 @@ public class OpenFileHandler {
      * @param maxWidth Specifies the maximum width of th resulting buffered image
      * @param maxHeight Specifies the maximum height of th resulting buffered image
      */
-    public BufferedImage renderImage(int maxWidth, int maxHeight) throws UnsupportedFileTypeException {
+    public BufferedImage renderImage(int maxWidth, int maxHeight, boolean background) throws UnsupportedFileTypeException {
 
         SerializedCommands serialized = serialize();
         int[] dimensions = serialized.scale(maxWidth, maxHeight);
@@ -94,6 +94,10 @@ public class OpenFileHandler {
 
         BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
+        if(background) {
+            graphics.setColor(new Color(244, 244, 244));
+            graphics.fillRect(0, 0, imageWidth, imageHeight);
+        }
         graphics.setColor(Color.BLACK);
 
         Command oldCommand = null;
