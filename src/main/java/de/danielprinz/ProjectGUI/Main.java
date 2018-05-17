@@ -22,6 +22,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -94,7 +95,7 @@ public class Main extends Application {
                 return;
             }
 
-            openFileHandler.read(file);
+            openFileHandler.read(file); // TODO make async
             BufferedImage bufferedImage;
             try {
 
@@ -147,6 +148,7 @@ public class Main extends Application {
         preview.setFitWidth(500);
         GridPane.setConstraints(preview, 0, 0);
 
+
         draggable = new ImageView();
         draggable.setImage(SettingsHandler.JOYSTICK_CROSSHAIRS);
         //draggable.setOnMouseDragged(new MouseDraggedListener(draggable, 20, 32, 32, 0.01));
@@ -159,9 +161,13 @@ public class Main extends Application {
         draggable.setCursor(Cursor.HAND);
         Pane pane = new Pane(); // TODO do we need this one?
         pane.getChildren().add(draggable);
-        GridPane.setConstraints(pane, 1, 0);
 
-        innerPane.getChildren().addAll(preview, pane);
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(pane);
+
+        GridPane.setConstraints(stackPane, 1, 0);
+
+        innerPane.getChildren().addAll(preview, stackPane);
         mainPane.getChildren().addAll(menuBar, innerPane);
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
