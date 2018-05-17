@@ -23,6 +23,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -41,7 +43,7 @@ public class Main extends Application {
     private static Stage window;
     private static MenuBar menuBar;
     private static ImageView preview;
-    private static ImageView draggable;
+    private static ImageView crosshair;
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
@@ -148,22 +150,37 @@ public class Main extends Application {
         preview.setFitWidth(500);
         GridPane.setConstraints(preview, 0, 0);
 
+        /*
+         * Create the crosshair
+         */
+        crosshair = new ImageView();
+        crosshair.setImage(SettingsHandler.JOYSTICK_CROSSHAIRS);
 
-        draggable = new ImageView();
-        draggable.setImage(SettingsHandler.JOYSTICK_CROSSHAIRS);
-        //draggable.setOnMouseDragged(new MouseDraggedListener(draggable, 20, 32, 32, 0.01));
-        //draggable.setOnMousePressed(new MousePressedListener(draggable, 20, 32, 32, 0.01));
-        MouseListener mouseListener = new MouseListener(draggable, 30, 0.5);
-        draggable.setOnMousePressed(mouseListener.new MouseListenerPress());
-        draggable.setOnMouseDragged(mouseListener.new MouseListenerDrag());
-        draggable.setOnMouseReleased(mouseListener.new MouseListenerReleased());
-        //draggable.setOnMouseClicked(new MouseDraggedListener(draggable,20, 32, 32, 0.01));
-        draggable.setCursor(Cursor.HAND);
-        Pane pane = new Pane(); // TODO do we need this one?
-        pane.getChildren().add(draggable);
+        /**
+         * Create the draggable overlay
+         */
+        Circle overlay = new Circle();
+        overlay.setFill(Color.RED);
+        overlay.setOpacity(0.2);
+        overlay.setCursor(Cursor.HAND);
+        overlay.setCenterX((int) crosshair.getImage().getWidth() / 2);
+        overlay.setCenterY((int) crosshair.getImage().getHeight() / 2);
+        overlay.setRadius((int) crosshair.getImage().getWidth() / 2);
+        MouseListener mouseListener = new MouseListener(crosshair, 25, 0.5);
+        overlay.setOnMousePressed(mouseListener.new MouseListenerPress());
+        overlay.setOnMouseDragged(mouseListener.new MouseListenerDrag());
+        overlay.setOnMouseReleased(mouseListener.new MouseListenerReleased());
+
+        /**
+         * Merge the controller
+         */
+        Pane crosshairPane = new Pane();
+        Pane overlayPane = new Pane();
+        crosshairPane.getChildren().add(crosshair);
+        overlayPane.getChildren().add(overlay);
 
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(pane);
+        stackPane.getChildren().addAll(crosshairPane, overlayPane); // overlayPane needs to be the last element being added to the stackPane!
 
         GridPane.setConstraints(stackPane, 1, 0);
 
