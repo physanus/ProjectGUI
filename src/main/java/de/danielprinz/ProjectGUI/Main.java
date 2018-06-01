@@ -1,5 +1,6 @@
 package de.danielprinz.ProjectGUI;
 
+import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
@@ -7,6 +8,7 @@ import de.danielprinz.ProjectGUI.io.ConnectionHandler;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
+import de.danielprinz.ProjectGUI.resources.CommandType;
 import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import de.danielprinz.ProjectGUI.resources.Strings;
 import javafx.application.Application;
@@ -15,10 +17,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -42,12 +41,16 @@ public class Main extends Application {
 
     private static Stage window;
     private static MenuBar menuBar;
-    private static ImageView preview;
+    public static ImageView preview; // TODO getter
     private static ImageView crosshair;
+
+    // custom drawing
+    private static Button penToggle;
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
     private static ConnectionHandler connectionHandler;
+    private static MouseListener mouseListener;
 
     public static void main(String[] args) {
         launch(args);
@@ -159,14 +162,17 @@ public class Main extends Application {
         /**
          * Create the draggable overlay
          */
+        int movementRadius = 25;
+
         Circle overlay = new Circle();
-        overlay.setFill(Color.RED);
+        overlay.setFill(Color.BLACK);
         overlay.setOpacity(0.2);
         overlay.setCursor(Cursor.HAND);
         overlay.setCenterX((int) crosshair.getImage().getWidth() / 2);
         overlay.setCenterY((int) crosshair.getImage().getHeight() / 2);
-        overlay.setRadius((int) crosshair.getImage().getWidth() / 2);
-        MouseListener mouseListener = new MouseListener(crosshair, 25, 0.5);
+        //overlay.setRadius((int) crosshair.getImage().getWidth() / 2);
+        overlay.setRadius(movementRadius);
+        this.mouseListener = new MouseListener(crosshair, movementRadius, 0.5);
         overlay.setOnMousePressed(mouseListener.new MouseListenerPress());
         overlay.setOnMouseDragged(mouseListener.new MouseListenerDrag());
         overlay.setOnMouseReleased(mouseListener.new MouseListenerReleased());
@@ -183,6 +189,27 @@ public class Main extends Application {
         stackPane.getChildren().addAll(crosshairPane, overlayPane); // overlayPane needs to be the last element being added to the stackPane!
 
         GridPane.setConstraints(stackPane, 1, 0);
+
+
+        /*
+         * custom drawing
+         */
+
+        penToggle = new Button("Pen DOWN"); // Pen is up at the moment
+        DrawHelper.setCommandType(CommandType.PU); // should be the default anyways
+        penToggle.setPrefWidth(100);
+        GridPane.setConstraints(penToggle, 1, 2);
+        penToggle.setOnAction(e -> {
+            if(penToggle.getText().equalsIgnoreCase("Pen UP")) {
+                penToggle.setText("Pen DOWN");
+                DrawHelper.setCommandType(CommandType.PU);
+            } else {
+                penToggle.setText("Pen UP");
+                DrawHelper.setCommandType(CommandType.PD);
+            }
+        });
+
+        stackPane.getChildren().addAll(penToggle);
 
         innerPane.getChildren().addAll(preview, stackPane);
         mainPane.getChildren().addAll(menuBar, innerPane);
@@ -258,5 +285,13 @@ public class Main extends Application {
 
     public static ConnectionHandler getConnectionHandler() {
         return connectionHandler;
+    }
+
+    public static OpenFileHandler getOpenFileHandler() {
+        return openFileHandler;
+    }
+
+    public static MouseListener getMouseListener() {
+        return mouseListener;
     }
 }

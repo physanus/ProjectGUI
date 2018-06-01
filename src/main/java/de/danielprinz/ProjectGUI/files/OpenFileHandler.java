@@ -1,7 +1,9 @@
 package de.danielprinz.ProjectGUI.files;
 
 import de.danielprinz.ProjectGUI.Main;
+import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
+import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
@@ -10,6 +12,7 @@ import de.danielprinz.ProjectGUI.resources.Command;
 import de.danielprinz.ProjectGUI.resources.CommandType;
 import de.danielprinz.ProjectGUI.resources.SerializedCommands;
 import de.danielprinz.ProjectGUI.resources.Strings;
+import javafx.embed.swing.SwingFXUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -20,7 +23,9 @@ public class OpenFileHandler {
 
     private File openFile;
     private ArrayList<String> fileContent = new ArrayList<>();
-    private boolean isSaved = true;
+
+    private SerializedCommands serialized;
+    private boolean fileChanged = false;
 
     public OpenFileHandler(File openFile) {
         this.openFile = openFile;
@@ -63,6 +68,8 @@ public class OpenFileHandler {
             FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
         }
 
+        Main.getMouseListener().reset();
+        DrawHelper.reset();
     }
 
 
@@ -72,11 +79,13 @@ public class OpenFileHandler {
      * @return SAVE/NOSAVE/CANCEL
      */
     public CloseSaveBoxResult showDialogBox() {
-        if(this.isSaved) return CloseSaveBoxResult.NOSAVE; // TODO implement isSaved variable
+        if(!this.fileChanged) return CloseSaveBoxResult.NOSAVE; // TODO implement fileChanged variable
         CloseSaveBoxResult result = CloseSaveBox.display(Main.WINDOW_TITLE, Strings.SAVE_CHANGES_QUESTION.format(this.openFile.getName())); // TODO show the current filename
         if(result == null) result.equals(CloseSaveBoxResult.CANCEL);
         return result;
     }
+
+
 
     /**
      * Generates a bufferedImage from the file input
@@ -87,8 +96,8 @@ public class OpenFileHandler {
      */
     public BufferedImage renderImage(int maxWidth, int maxHeight, boolean background) throws UnsupportedFileTypeException {
 
-        SerializedCommands serialized = serialize();
-        int[] dimensions = serialized.scale(maxWidth, maxHeight);
+        this.serialize();
+        int[] dimensions = this.serialized.scale(maxWidth, maxHeight);
         int imageWidth = dimensions[0];
         int imageHeight = dimensions[1];
 
@@ -101,7 +110,7 @@ public class OpenFileHandler {
         graphics.setColor(Color.BLACK);
 
         Command oldCommand = null;
-        for(Command command : serialized.getValues()) {
+        for(Command command : this.serialized.getValues()) {
             // bufferedImage: (0, 0) is at the top left
             // command:       (0, 0) is at the bottom left
 
@@ -132,9 +141,9 @@ public class OpenFileHandler {
      * @return The serialized content
      * @throws UnsupportedFileTypeException Thrown in case the file contains statements the parser cannot interpret
      */
-    private SerializedCommands serialize() throws UnsupportedFileTypeException {
+    private void serialize() throws UnsupportedFileTypeException {
 
-        SerializedCommands result = new SerializedCommands();
+        this.serialized = new SerializedCommands();
         boolean error = false;
 
         for(String line : fileContent) {
@@ -167,14 +176,28 @@ public class OpenFileHandler {
                     throw new UnsupportedFileTypeException();
                 }
 
-                result.add(new Command(commandType, x, y));
+                this.serialized.add(new Command(commandType, x, y));
             }
         }
 
         if(error)
             throw new UnsupportedFileTypeException();
 
-        return result;
+    }
+
+
+    public void addCommand(Command command) {
+        this.fileContent.add("\n" + command.toString());
+        this.serialized.add(command);
+        this.fileChanged = true;
+        // regenerate preview image
+        try {
+            BufferedImage bufferedImage = renderImage(500, 500, true);
+            Main.preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
+        } catch (UnsupportedFileTypeException e) {
+            // TODO handle
+            e.printStackTrace();
+        }
     }
 
 }

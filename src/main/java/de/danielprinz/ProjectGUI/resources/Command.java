@@ -34,4 +34,17 @@ public class Command {
         this.x *= x;
         this.y *= y;
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(commandType.toString())
+                .append(y)
+                .append(",")
+                .append(y);
+
+        return sb.toString();
+    }
 }

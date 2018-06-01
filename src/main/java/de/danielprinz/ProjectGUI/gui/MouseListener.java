@@ -1,17 +1,29 @@
 package de.danielprinz.ProjectGUI.gui;
 
+import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+import java.util.Dictionary;
+
 public class MouseListener {
 
-    private static double prevX;
-    private static double prevY;
+    private static double prevX, prevY;
 
     private final ImageView node;
     private final int MOVEMENT_RADIUS;
     private final double LOSS;
+
+    private int CROSSHAIR_POSITION_X;
+    private int CROSSHAIR_POSITION_Y;
+    private int cursorPositionX, cursorPositionY;
+
+    public void reset() {
+        cursorPositionX = 0;
+        cursorPositionY = 0;
+    }
 
 
     /**
@@ -31,21 +43,24 @@ public class MouseListener {
         public void handle(MouseEvent e) {
             prevX = e.getSceneX();
             prevY = e.getSceneY();
+
+            DrawHelper.runMovementChecker(node);
         }
     }
 
     public class MouseListenerDrag implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent e) {
+
             double dx = e.getSceneX() - prevX;
             double dy = e.getSceneY() - prevY;
+
             double newX = node.getX() + dx * LOSS;
             double newY = node.getY() + dy * LOSS;
 
             double distance = distance(0, 0, newX, newY);
-            if(distance > MOVEMENT_RADIUS) {
-                // TODO calculate nearest point on circle (r=MOVEMENT_RADIUS)
-            } else {
+            if(distance < MOVEMENT_RADIUS) {
+                // we are inside the circle
                 node.setX(newX);
                 node.setY(newY);
             }
@@ -77,8 +92,9 @@ public class MouseListener {
         public void handle(MouseEvent e) {
             node.setX(0);
             node.setY(0);
+
+            DrawHelper.stopMovementChecker();
         }
     }
-
 
 }
