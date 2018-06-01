@@ -1,10 +1,12 @@
 package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.drawing.DrawHelper;
+import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
+import de.danielprinz.ProjectGUI.io.SerialWriter;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
@@ -43,9 +45,8 @@ public class Main extends Application {
     private static MenuBar menuBar;
     public static ImageView preview; // TODO getter
     private static ImageView crosshair;
-
-    // custom drawing
     private static Button penToggle;
+    private static Button draw;
 
     private static Main instance;
     private static OpenFileHandler openFileHandler;
@@ -195,10 +196,15 @@ public class Main extends Application {
          * custom drawing
          */
 
+        GridPane right = new GridPane();
+        right.setPadding(new Insets(10, 10, 10, 10));
+        right.setVgap(8);
+        right.setHgap(10);
+
         penToggle = new Button("Pen DOWN"); // Pen is up at the moment
         DrawHelper.setCommandType(CommandType.PU); // should be the default anyways
         penToggle.setPrefWidth(100);
-        GridPane.setConstraints(penToggle, 1, 2);
+        GridPane.setConstraints(penToggle, 1, 1);
         penToggle.setOnAction(e -> {
             if(penToggle.getText().equalsIgnoreCase("Pen UP")) {
                 penToggle.setText("Pen DOWN");
@@ -209,7 +215,24 @@ public class Main extends Application {
             }
         });
 
-        stackPane.getChildren().addAll(penToggle);
+        draw = new Button("Draw");
+        draw.setPrefWidth(100);
+        GridPane.setConstraints(draw, 1, 2);
+        draw.setOnAction(event -> {
+
+            // send the commands via uart
+            try {
+                connectionHandler.connectIfNotConnected("COM5");
+                connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized());
+            } catch (SerialConectionException e) {
+                // TODO show dialog
+                if(DEBUG) System.err.println("No serial connection could be established");
+            }
+
+        });
+
+        right.getChildren().addAll(penToggle, draw);
+        stackPane.getChildren().addAll(right);
 
         innerPane.getChildren().addAll(preview, stackPane);
         mainPane.getChildren().addAll(menuBar, innerPane);

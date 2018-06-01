@@ -79,7 +79,7 @@ public class DrawHelper {
 
 
                 drawLine(crosshairPositionX, crosshairPositionY);
-                
+
 
                 try {
                     Thread.sleep(50);

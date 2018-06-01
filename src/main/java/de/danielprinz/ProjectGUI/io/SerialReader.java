@@ -37,7 +37,7 @@ public class SerialReader implements Runnable{
                 }
             }
         } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected();
+            Main.getConnectionHandler().setDisconnected(true);
         }
 
     }

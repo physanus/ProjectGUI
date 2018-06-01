@@ -3,7 +3,6 @@ package de.danielprinz.ProjectGUI.files;
 import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
-import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBox;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
@@ -200,4 +199,8 @@ public class OpenFileHandler {
         }
     }
 
+
+    public SerializedCommands getSerialized() {
+        return serialized;
+    }
 }

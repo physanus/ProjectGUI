@@ -1,17 +1,5 @@
 package de.danielprinz.ProjectGUI.popupHandler;
 
-import com.sun.javafx.scene.traversal.Direction;
-import com.sun.javafx.tk.FontLoader;
-import com.sun.javafx.tk.Toolkit;
-import de.danielprinz.ProjectGUI.Main;
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
 public class SetingsBox {
 
     public static void display() {

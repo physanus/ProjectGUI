@@ -1,6 +1,8 @@
 package de.danielprinz.ProjectGUI.io;
 
 import de.danielprinz.ProjectGUI.Main;
+import de.danielprinz.ProjectGUI.resources.Command;
+import de.danielprinz.ProjectGUI.resources.SerializedCommands;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,10 +12,6 @@ public class SerialWriter implements Runnable {
     private OutputStream out;
     private int mid = 0;
     private String message;
-    private String cmd = "";
-    private String lastcmd = "";
-    private int data = -1;
-    private int lastdata = -1;
 
     private boolean isRunning;
 
@@ -24,45 +22,21 @@ public class SerialWriter implements Runnable {
     public void run() {
         if(!isRunning) return;
         try {
-            if(cmd.equals(lastcmd) && data == lastdata) return;
             out.write(message.getBytes());
             Main.addToCmdWindow("sent: " + message);
-
-            lastcmd = cmd;
-            lastdata = data;
-            message = "";
-
         } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected();
+            Main.getConnectionHandler().setDisconnected(true);
         }
-    }
-
-
-    /**
-     * Sends a message to the connected device
-     * @param cmd The cmd (String)
-     * @param data The data (int)
-     */
-    public void sendUART(String cmd, int data) {
-        sendUART(cmd, data, false);
     }
 
     /**
      * Forces the execution of this particular message
      * @param cmd
-     * @param data
-     * @param force
      */
-    public void sendUART(String cmd, int data, boolean force) {
-        if(cmd.equals(lastcmd) && data == lastdata && !force) return;
-
-        String message = "#" + getMid() + ":" + cmd + ":" + data + "$";
+    public void sendUART(String cmd) {
+        String message = "#" + getMid() + ":" + cmd + "$";
 
         this.message = message;
-        this.cmd = cmd;
-        this.data = data;
-        if(force) this.lastcmd = cmd + "h";
-        if(force) this.lastdata = -1;
         run();
     }
 
@@ -78,4 +52,11 @@ public class SerialWriter implements Runnable {
         this.isRunning = isRunning;
     }
 
+    public void sendUART(SerializedCommands serialized) {
+
+        for(Command command : serialized.getValues()) {
+            sendUART(command.toString());
+        }
+
+    }
 }

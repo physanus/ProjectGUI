@@ -1,6 +1,7 @@
 package de.danielprinz.ProjectGUI.io;
 
 import de.danielprinz.ProjectGUI.Main;
+import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
 import purejavacomm.*;
 
 import java.io.IOException;
@@ -17,57 +18,71 @@ public class ConnectionHandler {
     private Thread disconnectedThread;
 
 
-    public void connect(String portName) {
-        // http://rxtx.qbang.org/wiki/index.php/Two_way_communcation_with_the_serial_port
+    public void connectIfNotConnected(String portName) throws SerialConectionException {
+        if(serialReader == null || serialWriter == null)
+            connect(portName);
+    }
 
+    public void connectAsync(String portName) {
         new Thread(() -> {
             try {
-                CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
-                if(portIdentifier.isCurrentlyOwned()) {
-                    System.out.println("Error: Port is currently in use");
-                    return;
-                } else {
-                    CommPort commPort = portIdentifier.open(Main.WINDOW_TITLE,2000);
-
-                    if(commPort instanceof SerialPort) {
-                        SerialPort serialPort = (SerialPort) commPort;
-                        serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-                        InputStream in = serialPort.getInputStream();
-                        OutputStream out = serialPort.getOutputStream();
-
-                        serialReader = new SerialReader(in);
-                        serialReaderThread = new Thread(serialReader);
-                        serialReader.setRunning(true);
-                        serialReaderThread.start();
-
-                        serialWriter = new SerialWriter(out);
-                        serialWriterThread = new Thread(serialWriter);
-                        serialWriter.setRunning(true);
-                        serialWriterThread.start();
-                    } else {
-                        System.out.println("Error: Only serial ports are handled.");
-                        return;
-                    }
-                }
-                System.out.println("Established serial connection to " + portName);
-            } catch (UnsupportedCommOperationException | IOException | NoSuchPortException | PortInUseException e) {
-                System.out.println("Failed connection to " + portName);
-                setDisconnected();
+                connect(portName);
+            } catch (SerialConectionException e) {
+                e.printStackTrace();
             }
         }).start();
+    }
+
+    public void connect(String portName) throws SerialConectionException {
+        // http://rxtx.qbang.org/wiki/index.php/Two_way_communcation_with_the_serial_port
+
+        try {
+            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+            if(portIdentifier.isCurrentlyOwned()) {
+                System.out.println("Error: Port is currently in use");
+                return;
+            } else {
+                CommPort commPort = portIdentifier.open(Main.WINDOW_TITLE,2000); // TODO timeout to settings
+
+                if(commPort instanceof SerialPort) {
+                    SerialPort serialPort = (SerialPort) commPort;
+                    serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
+                    InputStream in = serialPort.getInputStream();
+                    OutputStream out = serialPort.getOutputStream();
+
+                    serialReader = new SerialReader(in);
+                    serialReaderThread = new Thread(serialReader);
+                    serialReader.setRunning(true);
+                    serialReaderThread.start();
+
+                    serialWriter = new SerialWriter(out);
+                    serialWriterThread = new Thread(serialWriter);
+                    serialWriter.setRunning(true);
+                    serialWriterThread.start();
+                } else {
+                    System.err.println("Error: Only serial ports are handled.");
+                    throw new SerialConectionException();
+                }
+            }
+            System.out.println("Established serial connection to " + portName);
+        } catch (UnsupportedCommOperationException | IOException | NoSuchPortException | PortInUseException e) {
+            //System.err.println("Failed connection to " + portName);
+            setDisconnected(false);
+            throw new SerialConectionException();
+        }
 
     }
 
 
 
-    public void setDisconnected() {
+    public void setDisconnected(boolean startLoop) {
         if(disconnectedThread != null) return;
 
         // TODO disable buttons
         if(serialReader != null) serialReader.setRunning(false);
         if(serialWriter != null) serialWriter.setRunning(false);
-        Main.addToCmdWindow("Serial device is not connected to COM5");
+        //Main.addToCmdWindow("Serial device is not connected to COM5");
 
         disconnectedThread = new Thread(() -> {
             while(true) {
@@ -83,7 +98,7 @@ public class ConnectionHandler {
                 }
             }
         });
-        disconnectedThread.start();
+        if(startLoop) disconnectedThread.start();
     }
 
 
@@ -94,4 +109,5 @@ public class ConnectionHandler {
     public SerialWriter getSerialWriter() {
         return serialWriter;
     }
+
 }

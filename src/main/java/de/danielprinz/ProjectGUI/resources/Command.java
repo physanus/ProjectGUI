@@ -43,7 +43,7 @@ public class Command {
         sb.append(commandType.toString())
                 .append(y)
                 .append(",")
-                .append(y);
+                .append(y + ";");
 
         return sb.toString();
     }
