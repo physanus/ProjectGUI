@@ -37,7 +37,7 @@ public class SerialReader implements Runnable{
                 }
             }
         } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected(true);
+            Main.getConnectionHandler().setDisconnected("COM9", true); // TODO portName to settings
         }
 
     }

@@ -68,7 +68,7 @@ public class ConnectionHandler {
             System.out.println("Established serial connection to " + portName);
         } catch (UnsupportedCommOperationException | IOException | NoSuchPortException | PortInUseException e) {
             //System.err.println("Failed connection to " + portName);
-            setDisconnected(false);
+            setDisconnected(portName, false);
             throw new SerialConectionException();
         }
 
@@ -76,7 +76,7 @@ public class ConnectionHandler {
 
 
 
-    public void setDisconnected(boolean startLoop) {
+    public void setDisconnected(String portName, boolean startLoop) {
         if(disconnectedThread != null) return;
 
         // TODO disable buttons
@@ -88,7 +88,7 @@ public class ConnectionHandler {
             while(true) {
                 try {
                     Thread.sleep(2000);
-                    connect("COM5");
+                    connect(portName);
                     // set connected
                     // TODO enable buttons
                     Main.clearCmdWindow();

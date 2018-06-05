@@ -21,11 +21,12 @@ public class SerialWriter implements Runnable {
 
     public void run() {
         if(!isRunning) return;
+        if(message == null) return;
         try {
             out.write(message.getBytes());
             Main.addToCmdWindow("sent: " + message);
         } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected(true);
+            Main.getConnectionHandler().setDisconnected("COM9", true); // TODO portName to settings
         }
     }
 
@@ -53,10 +54,8 @@ public class SerialWriter implements Runnable {
     }
 
     public void sendUART(SerializedCommands serialized) {
-
         for(Command command : serialized.getValues()) {
             sendUART(command.toString());
         }
-
     }
 }

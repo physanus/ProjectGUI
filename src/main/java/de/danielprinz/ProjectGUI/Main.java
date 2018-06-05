@@ -6,7 +6,6 @@ import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
-import de.danielprinz.ProjectGUI.io.SerialWriter;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
@@ -219,16 +218,24 @@ public class Main extends Application {
         draw.setPrefWidth(100);
         GridPane.setConstraints(draw, 1, 2);
         draw.setOnAction(event -> {
+            new Thread(() -> {
 
-            // send the commands via uart
-            try {
-                connectionHandler.connectIfNotConnected("COM5");
-                connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized());
-            } catch (SerialConectionException e) {
-                // TODO show dialog
-                if(DEBUG) System.err.println("No serial connection could be established");
-            }
+                // send the commands via uart
+                try {
 
+                    connectionHandler.connectIfNotConnected("COM9");
+                    if(DEBUG) System.out.println("begin");
+                    long timeBegin = System.currentTimeMillis();
+                    connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized());
+                    long timeEnd = System.currentTimeMillis();
+                    System.out.println("end");
+                    if(DEBUG) System.out.println("elapsed time for sending uart commands: " + ((timeEnd - timeBegin)/1000));
+                } catch (SerialConectionException e) {
+                    // TODO show dialog
+                    if(DEBUG) System.err.println("No serial connection could be established");
+                }
+
+            }).start();
         });
 
         right.getChildren().addAll(penToggle, draw);
@@ -295,7 +302,7 @@ public class Main extends Application {
         // TODO implement
         //Platform.runLater(() -> text.setText(text.getText().equals("") ? text.getText() + line : text.getText() + "\n" + line));
         //scrollPane.setVvalue(1); // scroll to the bottom
-        System.out.println("DEBUG: " + line);
+        //System.out.println("DEBUG: " + line);
     }
 
     /**
