@@ -6,12 +6,15 @@ import de.danielprinz.ProjectGUI.resources.SerializedCommands;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class SerialWriter implements Runnable {
 
+    private static final int COMMANDS_PER_SECOND = 20; // TODO add to settings
+
     private OutputStream out;
     private int mid = 0;
-    private String message;
+    private ArrayList<Command> queue;
 
     private boolean isRunning;
 
@@ -20,26 +23,28 @@ public class SerialWriter implements Runnable {
     }
 
     public void run() {
-        if(!isRunning) return;
-        if(message == null) return;
-        try {
-            out.write(message.getBytes());
-            Main.addToCmdWindow("sent: " + message);
-        } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected(Main.COM_PORT, true); // TODO portName to settings
+        while(true) {
+            if(!(queue == null) && queue.size() > 0) {
+                String message = "#" + getMid() + ":" + queue.get(0).toString() + "$";
+                try {
+                    out.write(message.getBytes());
+                    System.out.println("sent: " + message);
+                    System.out.println();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                queue.remove(0);
+            }
+
+            try {
+                Thread.sleep(1000 / COMMANDS_PER_SECOND);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    /**
-     * Forces the execution of this particular message
-     * @param cmd
-     */
-    public void sendUART(String cmd) {
-        String message = "#" + getMid() + ":" + cmd + "$";
 
-        this.message = message;
-        run();
-    }
 
     private int getMid() {
         mid = mid == 100 ? 0 : mid; // range: 0 - 99
@@ -53,13 +58,26 @@ public class SerialWriter implements Runnable {
         this.isRunning = isRunning;
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
     public void sendUART(SerializedCommands serialized, boolean titleProcess) {
-        int count = 1;
-        for(Command command : serialized.getValues()) {
-            sendUART(command.toString());
-            Main.setCountingTitleForDrawing(count, serialized.getValues().size());
-            count++;
+        queue = new ArrayList<>(serialized.getValues());
+        if(titleProcess) {
+            new Thread(() -> {
+                while(queue.size() > 0) {
+                    Main.setCountingTitleForDrawing(serialized.getValues().size() - queue.size(), serialized.getValues().size());
+                    try {
+                        Thread.sleep(1000 / COMMANDS_PER_SECOND);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Main.resetCountingTitleForDrawing();
+                Main.enableAll();
+            }).start();
         }
-        Main.resetCountingTitleForDrawing();
     }
 }

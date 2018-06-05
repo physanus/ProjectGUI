@@ -47,4 +47,7 @@ public class SerialReader implements Runnable{
         this.isRunning = isRunning;
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
 }

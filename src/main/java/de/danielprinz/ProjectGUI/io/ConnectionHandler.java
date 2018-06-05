@@ -19,7 +19,8 @@ public class ConnectionHandler {
 
 
     public void connectIfNotConnected(String portName) throws SerialConectionException {
-        if(serialReader == null || serialWriter == null)
+        System.out.println("connectIfNotConnected(String portName)");
+        if(serialReader == null || serialWriter == null || !serialReader.isRunning() || !serialWriter.isRunning())
             connect(portName);
     }
 
@@ -34,12 +35,14 @@ public class ConnectionHandler {
     }
 
     public void connect(String portName) throws SerialConectionException {
+        System.out.println("connect(String portName)");
         // http://rxtx.qbang.org/wiki/index.php/Two_way_communcation_with_the_serial_port
 
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
             if(portIdentifier.isCurrentlyOwned()) {
-                System.out.println("Error: Port is currently in use");
+                // we already connected somewhen before
+
                 return;
             } else {
                 CommPort commPort = portIdentifier.open(Main.WINDOW_TITLE,2000); // TODO timeout to settings
@@ -51,12 +54,12 @@ public class ConnectionHandler {
                     InputStream in = serialPort.getInputStream();
                     OutputStream out = serialPort.getOutputStream();
 
-                    serialReader = new SerialReader(in);
+                    if(serialReader == null) serialReader = new SerialReader(in);
                     serialReaderThread = new Thread(serialReader);
                     serialReader.setRunning(true);
                     serialReaderThread.start();
 
-                    serialWriter = new SerialWriter(out);
+                    if(serialWriter == null) serialWriter = new SerialWriter(out);
                     serialWriterThread = new Thread(serialWriter);
                     serialWriter.setRunning(true);
                     serialWriterThread.start();
@@ -76,7 +79,8 @@ public class ConnectionHandler {
 
 
 
-    public void setDisconnected(String portName, boolean startLoop) {
+    public void setDisconnected(String portName, boolean reconnect) {
+        System.out.println("setDisconnected()");
         if(disconnectedThread != null) return;
 
         // TODO disable buttons
@@ -98,7 +102,7 @@ public class ConnectionHandler {
                 }
             }
         });
-        if(startLoop) disconnectedThread.start();
+        if(reconnect) disconnectedThread.start();
     }
 
 

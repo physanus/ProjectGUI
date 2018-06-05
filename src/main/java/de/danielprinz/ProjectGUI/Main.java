@@ -37,6 +37,11 @@ import java.util.Enumeration;
 
 public class Main extends Application {
 
+    /**
+     * TODO
+     * - Skalierung auch via UART übertragen? Eher nicht ...
+     */
+
     public static final int MAX_WIDTH_IMAGE = 650, MAX_HEIGHT_IMAGE = 750;
 
     public static final String COM_PORT = "COM1";
@@ -247,22 +252,19 @@ public class Main extends Application {
         draw.setPrefWidth(100);
         GridPane.setConstraints(draw, 0, 3);
         draw.setOnAction(event -> {
-            new Thread(() -> {
 
-                // send the commands via uart
-                try {
-                    disableAll();
-                    connectionHandler.connectIfNotConnected(Main.COM_PORT);
-                    connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
-                } catch (SerialConectionException e) {
-                    // TODO show dialog
-                    Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
-                    if(DEBUG) System.err.println("No serial connection could be established");
-                }
+            // send the commands via uart
+            try {
+                disableAll();
+                connectionHandler.connectIfNotConnected(Main.COM_PORT);
+                connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
+            } catch (SerialConectionException e) {
+                // TODO show dialog
+                e.printStackTrace();
+                Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
+                if(DEBUG) System.err.println("No serial connection could be established");
+            }
 
-                enableAll();
-
-            }).start();
         });
 
         rightSideButtons.getChildren().addAll(penToggle, draw);
@@ -330,7 +332,7 @@ public class Main extends Application {
         // TODO implement
         //Platform.runLater(() -> text.setText(text.getText().equals("") ? text.getText() + line : text.getText() + "\n" + line));
         //scrollPane.setVvalue(1); // scroll to the bottom
-        //System.out.println("DEBUG: " + line);
+        System.out.println("DEBUG: " + line);
     }
 
     /**
