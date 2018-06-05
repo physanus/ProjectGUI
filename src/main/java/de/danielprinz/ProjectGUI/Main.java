@@ -7,6 +7,7 @@ import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
 import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
+import de.danielprinz.ProjectGUI.popupHandler.ConnectionErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.CommandType;
@@ -27,12 +28,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import purejavacomm.CommPortIdentifier;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Enumeration;
 
 
 public class Main extends Application {
+
+    public static final int MAX_WIDTH_IMAGE = 650, MAX_HEIGHT_IMAGE = 750;
+
+    public static final String COM_PORT = "COM1";
+    public static boolean isUIDisabled = false;
 
     public static final boolean DEBUG = true;
 
@@ -44,6 +52,7 @@ public class Main extends Application {
     private static MenuBar menuBar;
     public static ImageView preview; // TODO getter
     private static ImageView crosshair;
+    private static Circle overlay;
     private static Button penToggle;
     private static Button draw;
 
@@ -53,6 +62,16 @@ public class Main extends Application {
     private static MouseListener mouseListener;
 
     public static void main(String[] args) {
+
+        Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+        while(portIdentifiers.hasMoreElements()) {
+            CommPortIdentifier portid = portIdentifiers.nextElement();
+            System.out.println(portid.getName());
+            //System.out.println(portid.isCurrentlyOwned()); // does not work properly
+            //System.out.println(portid.getCurrentOwner());  // does not work properly
+            //System.out.println(portid.getPortType());
+        }
+
         launch(args);
     }
 
@@ -62,7 +81,8 @@ public class Main extends Application {
         SettingsHandler.checkAvailableResources();
 
         instance = this;
-        openFileHandler = new OpenFileHandler(new File("hi.png")); // TODO call when file is opened
+        //openFileHandler = new OpenFileHandler(new File("hi.png")); // TODO call when file is opened
+        openFileHandler = new OpenFileHandler();
         connectionHandler = new ConnectionHandler();
 
         window = primaryStage;
@@ -104,7 +124,7 @@ public class Main extends Application {
             BufferedImage bufferedImage;
             try {
 
-                bufferedImage = openFileHandler.renderImage(500, 500, true);
+                bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_WIDTH_IMAGE, true);
                 preview.setFitWidth(0);
                 preview.setFitHeight(0);
                 preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
@@ -159,20 +179,27 @@ public class Main extends Application {
         crosshair = new ImageView();
         crosshair.setImage(SettingsHandler.JOYSTICK_CROSSHAIRS);
 
-        /**
+        /*
          * Create the draggable overlay
          */
         int movementRadius = 25;
 
-        Circle overlay = new Circle();
+        overlay = new Circle();
         overlay.setFill(Color.BLACK);
         overlay.setOpacity(0.2);
         overlay.setCursor(Cursor.HAND);
-        overlay.setCenterX((int) crosshair.getImage().getWidth() / 2);
-        overlay.setCenterY((int) crosshair.getImage().getHeight() / 2);
+
+        overlay.setLayoutX((int) crosshair.getImage().getWidth() / 2);
+        overlay.setLayoutY((int) crosshair.getImage().getHeight() / 2);
+//        overlay.setCenterX(45);
+//        overlay.setCenterY(15);
+//
+//        crosshair.setX(45);
+//        crosshair.setY(15);
+
         //overlay.setRadius((int) crosshair.getImage().getWidth() / 2);
         overlay.setRadius(movementRadius);
-        this.mouseListener = new MouseListener(crosshair, movementRadius, 0.5);
+        mouseListener = new MouseListener(crosshair, movementRadius, 0.5);
         overlay.setOnMousePressed(mouseListener.new MouseListenerPress());
         overlay.setOnMouseDragged(mouseListener.new MouseListenerDrag());
         overlay.setOnMouseReleased(mouseListener.new MouseListenerReleased());
@@ -187,6 +214,8 @@ public class Main extends Application {
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(crosshairPane, overlayPane); // overlayPane needs to be the last element being added to the stackPane!
+        stackPane.setPrefWidth((int) crosshair.getImage().getHeight() * 1.5);
+        stackPane.setPrefHeight((int) crosshair.getImage().getWidth() * 1.5);
 
         GridPane.setConstraints(stackPane, 1, 0);
 
@@ -195,15 +224,15 @@ public class Main extends Application {
          * custom drawing
          */
 
-        GridPane right = new GridPane();
-        right.setPadding(new Insets(10, 10, 10, 10));
-        right.setVgap(8);
-        right.setHgap(10);
+        GridPane rightSideButtons = new GridPane();
+        rightSideButtons.setPadding(new Insets(10, 10, 10, 10));
+        rightSideButtons.setVgap(8);
+        rightSideButtons.setHgap(10);
 
         penToggle = new Button("Pen DOWN"); // Pen is up at the moment
         DrawHelper.setCommandType(CommandType.PU); // should be the default anyways
         penToggle.setPrefWidth(100);
-        GridPane.setConstraints(penToggle, 1, 1);
+        GridPane.setConstraints(penToggle, 0, 2);
         penToggle.setOnAction(e -> {
             if(penToggle.getText().equalsIgnoreCase("Pen UP")) {
                 penToggle.setText("Pen DOWN");
@@ -216,41 +245,40 @@ public class Main extends Application {
 
         draw = new Button("Draw");
         draw.setPrefWidth(100);
-        GridPane.setConstraints(draw, 1, 2);
+        GridPane.setConstraints(draw, 0, 3);
         draw.setOnAction(event -> {
             new Thread(() -> {
 
                 // send the commands via uart
                 try {
-
-                    connectionHandler.connectIfNotConnected("COM9");
-                    if(DEBUG) System.out.println("begin");
-                    long timeBegin = System.currentTimeMillis();
-                    connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized());
-                    long timeEnd = System.currentTimeMillis();
-                    System.out.println("end");
-                    if(DEBUG) System.out.println("elapsed time for sending uart commands: " + ((timeEnd - timeBegin)/1000));
+                    disableAll();
+                    connectionHandler.connectIfNotConnected(Main.COM_PORT);
+                    connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
                 } catch (SerialConectionException e) {
                     // TODO show dialog
+                    Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
                     if(DEBUG) System.err.println("No serial connection could be established");
                 }
+
+                enableAll();
 
             }).start();
         });
 
-        right.getChildren().addAll(penToggle, draw);
-        stackPane.getChildren().addAll(right);
+        rightSideButtons.getChildren().addAll(penToggle, draw);
+        GridPane.setConstraints(rightSideButtons, 1, 1);
 
-        innerPane.getChildren().addAll(preview, stackPane);
+        GridPane rightSide = new GridPane();
+        rightSide.getChildren().addAll(stackPane, rightSideButtons);
+        GridPane.setConstraints(rightSide, 1, 0);
+
+        innerPane.getChildren().addAll(preview, rightSide);
         mainPane.getChildren().addAll(menuBar, innerPane);
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         window.setScene(scene);
         window.show();
 
-
-        // Connect to the serial device, TODO: move to a ui-button
-        //connectionHandler.connect("COM5");
 
         if(DEBUG) {
             new Thread(() -> {
@@ -264,7 +292,7 @@ public class Main extends Application {
                 BufferedImage bufferedImage;
                 try {
 
-                    bufferedImage = openFileHandler.renderImage(500, 500, true);
+                    bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_WIDTH_IMAGE, true);
                     preview.setFitWidth(0);
                     preview.setFitHeight(0);
                     preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
@@ -323,5 +351,37 @@ public class Main extends Application {
 
     public static MouseListener getMouseListener() {
         return mouseListener;
+    }
+
+    public static void setCountingTitleForDrawing(int count, int size) {
+        Platform.runLater(() -> {
+            window.setTitle(WINDOW_TITLE + " (" + count + "/" + size + ")");
+            draw.setText("Draw (" + (100 * count / size) + " %)");
+        });
+    }
+
+    public static void resetCountingTitleForDrawing() {
+        Platform.runLater(() -> {
+            window.setTitle(WINDOW_TITLE);
+            draw.setText("Draw");
+        });
+    }
+
+
+    public static void disableAll() {
+        toggleUI(true);
+    }
+
+    public static void enableAll() {
+        toggleUI(false);
+    }
+
+    private static void toggleUI(boolean option) {
+        isUIDisabled = option;
+
+        draw.setDisable(option);
+        penToggle.setDisable(option);
+        menuBar.setDisable(option);
+        overlay.setCursor(option ? Cursor.DEFAULT : Cursor.HAND);
     }
 }

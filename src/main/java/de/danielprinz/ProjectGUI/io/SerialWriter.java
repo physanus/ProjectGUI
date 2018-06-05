@@ -26,7 +26,7 @@ public class SerialWriter implements Runnable {
             out.write(message.getBytes());
             Main.addToCmdWindow("sent: " + message);
         } catch (IOException e) {
-            Main.getConnectionHandler().setDisconnected("COM9", true); // TODO portName to settings
+            Main.getConnectionHandler().setDisconnected(Main.COM_PORT, true); // TODO portName to settings
         }
     }
 
@@ -53,9 +53,13 @@ public class SerialWriter implements Runnable {
         this.isRunning = isRunning;
     }
 
-    public void sendUART(SerializedCommands serialized) {
+    public void sendUART(SerializedCommands serialized, boolean titleProcess) {
+        int count = 1;
         for(Command command : serialized.getValues()) {
             sendUART(command.toString());
+            Main.setCountingTitleForDrawing(count, serialized.getValues().size());
+            count++;
         }
+        Main.resetCountingTitleForDrawing();
     }
 }

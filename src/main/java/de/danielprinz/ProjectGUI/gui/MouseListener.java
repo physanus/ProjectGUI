@@ -1,12 +1,10 @@
 package de.danielprinz.ProjectGUI.gui;
 
+import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-
-import java.util.Dictionary;
 
 public class MouseListener {
 
@@ -41,6 +39,8 @@ public class MouseListener {
     public class MouseListenerPress implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent e) {
+            if(Main.isUIDisabled) return;
+
             prevX = e.getSceneX();
             prevY = e.getSceneY();
 
@@ -51,6 +51,8 @@ public class MouseListener {
     public class MouseListenerDrag implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent e) {
+
+            if(Main.isUIDisabled) return;
 
             double dx = e.getSceneX() - prevX;
             double dy = e.getSceneY() - prevY;

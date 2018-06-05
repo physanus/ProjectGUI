@@ -30,6 +30,11 @@ public class OpenFileHandler {
         this.openFile = openFile;
     }
 
+    public OpenFileHandler() {
+
+    }
+
+
     public void save(CloseSaveBoxResult result) {
         if(!result.equals(CloseSaveBoxResult.SAVE)) return;
         save();
@@ -191,7 +196,7 @@ public class OpenFileHandler {
         this.fileChanged = true;
         // regenerate preview image
         try {
-            BufferedImage bufferedImage = renderImage(500, 500, true);
+            BufferedImage bufferedImage = renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_WIDTH_IMAGE, true);
             Main.preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
         } catch (UnsupportedFileTypeException e) {
             // TODO handle

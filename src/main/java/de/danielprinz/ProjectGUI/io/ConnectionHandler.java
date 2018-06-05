@@ -82,7 +82,7 @@ public class ConnectionHandler {
         // TODO disable buttons
         if(serialReader != null) serialReader.setRunning(false);
         if(serialWriter != null) serialWriter.setRunning(false);
-        //Main.addToCmdWindow("Serial device is not connected to COM5");
+        //Main.addToCmdWindow("Serial device is not connected to " + Main.COM_PORT);
 
         disconnectedThread = new Thread(() -> {
             while(true) {
