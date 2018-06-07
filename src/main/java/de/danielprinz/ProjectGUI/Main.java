@@ -28,11 +28,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import purejavacomm.CommPortIdentifier;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Enumeration;
 
 
 public class Main extends Application {
@@ -66,16 +64,6 @@ public class Main extends Application {
     private static MouseListener mouseListener;
 
     public static void main(String[] args) {
-
-        Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
-        while(portIdentifiers.hasMoreElements()) {
-            CommPortIdentifier portid = portIdentifiers.nextElement();
-            System.out.println(portid.getName());
-            //System.out.println(portid.isCurrentlyOwned()); // does not work properly
-            //System.out.println(portid.getCurrentOwner());  // does not work properly
-            //System.out.println(portid.getPortType());
-        }
-
         launch(args);
     }
 
