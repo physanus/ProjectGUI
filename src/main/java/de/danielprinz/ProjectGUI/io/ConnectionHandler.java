@@ -61,10 +61,10 @@ public class ConnectionHandler {
                     InputStream in = serialPort.getInputStream();
                     OutputStream out = serialPort.getOutputStream();
 
-                    if(serialReader == null) serialReader = new SerialReader(in);
+                    /*if(serialReader == null) serialReader = new SerialReader(in);
                     serialReaderThread = new Thread(serialReader);
                     serialReader.setRunning(true);
-                    serialReaderThread.start();
+                    serialReaderThread.start();*/
 
                     if(serialWriter == null) serialWriter = new SerialWriter(out);
                     serialWriterThread = new Thread(serialWriter);
@@ -90,7 +90,7 @@ public class ConnectionHandler {
         System.out.println("setDisconnected()");
         if(disconnectedThread != null) return;
 
-        if(reconnect) Main.disableAll(); // will be enabled again in the Runnable
+        if(reconnect) Main.disableAll(false); // will be enabled again in the Runnable
         if(serialReader != null) serialReader.setRunning(false);
         if(serialWriter != null) serialWriter.setRunning(false);
         //Main.addToCmdWindow("Serial device is not connected to " + Main.COM_PORT);

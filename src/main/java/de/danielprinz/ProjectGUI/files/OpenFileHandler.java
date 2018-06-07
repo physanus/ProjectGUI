@@ -22,17 +22,22 @@ public class OpenFileHandler {
     private FileHolder fileHolder;
 
 
+
     public void save(CloseSaveBoxResult result) {
         if(!result.equals(CloseSaveBoxResult.SAVE)) return;
         save();
     }
     public void save() {
+        saveas(this.openFile);
+    }
+
+    public void saveas(File dest) {
         final Command finalCommand = new Command(CommandType.PU, 0, 0);
         if(!fileHolder.getSerializedCommands().getLastValue().equals(finalCommand)) {
             fileHolder.addCommand(finalCommand);
         }
 
-        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(openFile))) {
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(dest))) {
             for(String line : this.fileHolder.getFileContent()) {
                 bufferedWriter.write(line + ";\n");
             }
@@ -44,6 +49,9 @@ public class OpenFileHandler {
 
         this.fileChanged = false;
     }
+
+
+
 
     public void read(File file) throws UnsupportedFileTypeException, NoSuchFileException {
         this.openFile = file;
@@ -160,5 +168,9 @@ public class OpenFileHandler {
 
     public FileHolder getFileHolder() {
         return fileHolder;
+    }
+
+    public File getOpenFile() {
+        return openFile;
     }
 }

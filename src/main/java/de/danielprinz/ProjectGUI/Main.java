@@ -43,7 +43,7 @@ public class Main extends Application {
 
     public static boolean isUIDisabled = false;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private final static int WINDOW_WIDTH = 800;
     private final static int WINDOW_HEIGHT = 860;
@@ -99,10 +99,9 @@ public class Main extends Application {
         open.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(Strings.MENUBAR_OPEN.format());
-            File debugTest = new File("C:\\Users\\prinz\\ownCloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources");
-            if (debugTest.exists()) {
-                // debug
-                fileChooser.setInitialDirectory(debugTest);
+
+            if(!(openFileHandler.getOpenFile() == null)) {
+                fileChooser.setInitialDirectory(openFileHandler.getOpenFile().getParentFile());
             }
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HP Graphics Language-Datei", "*.hpgl"));
             File file = fileChooser.showOpenDialog(window);
@@ -134,16 +133,19 @@ public class Main extends Application {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(Strings.MENUBAR_OPEN.format());
-            // TODO to configure
-            //fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("image", "*.jpg"));
-            File file = fileChooser.showOpenDialog(window);
+
+            if(!(openFileHandler.getOpenFile() == null)) {
+                fileChooser.setInitialDirectory(openFileHandler.getOpenFile().getParentFile());
+            }
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HP Graphics Language-Datei", "*.hpgl"));
+            File file = fileChooser.showSaveDialog(window);
             if(file == null) {
                 // no file was selected/dialog was cancelled
                 FileErrorBox.display(FileErrorType.NO_SUCH_FILE, WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
                 return;
             }
 
-            openFileHandler.save();
+            openFileHandler.saveas(file);
 
         });
         MenuItem settings = new MenuItem(Strings.MENUBAR_SETTINGS.format());
@@ -244,7 +246,7 @@ public class Main extends Application {
 
             // send the commands via uart
             try {
-                disableAll();
+                disableAll(true);
                 connectionHandler.connectIfNotConnected();
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
             } catch (SerialConnectionException e) {
@@ -267,7 +269,7 @@ public class Main extends Application {
         mainPane.getChildren().addAll(menuBar, innerPane);
 
 
-        disableAll();
+        disableAll(false);
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         window.setScene(scene);
@@ -364,20 +366,20 @@ public class Main extends Application {
     }
 
 
-    public static void disableAll() {
-        toggleUI(true);
+    public static void disableAll(boolean disableMenu) {
+        toggleUI(true, disableMenu);
     }
 
     public static void enableAll() {
-        toggleUI(false);
+        toggleUI(false, true);
     }
 
-    private static void toggleUI(boolean option) {
+    private static void toggleUI(boolean option, boolean toggleMenu) {
         isUIDisabled = option;
 
         draw.setDisable(option);
         penToggle.setDisable(option);
-        menuBar.setDisable(option);
+        if(toggleMenu) menuBar.setDisable(option);
         overlay.setCursor(option ? Cursor.DEFAULT : Cursor.HAND);
     }
 
