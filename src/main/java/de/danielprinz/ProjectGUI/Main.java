@@ -260,7 +260,7 @@ public class Main extends Application {
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
             } catch (SerialConectionException e) {
                 // TODO show dialog
-                e.printStackTrace();
+                //e.printStackTrace();
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
                 if(DEBUG) System.err.println("No serial connection could be established");
             }

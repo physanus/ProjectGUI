@@ -7,6 +7,7 @@ import purejavacomm.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 
 public class ConnectionHandler {
 
@@ -112,6 +113,18 @@ public class ConnectionHandler {
 
     public SerialWriter getSerialWriter() {
         return serialWriter;
+    }
+
+
+    public void autoChooseSerialPort() {
+
+        /*Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+        while(portIdentifiers.hasMoreElements()) {
+            CommPortIdentifier portid = portIdentifiers.nextElement();
+            System.out.println(portid.getName());
+            return portid.getName();
+        }*/
+
     }
 
 }
