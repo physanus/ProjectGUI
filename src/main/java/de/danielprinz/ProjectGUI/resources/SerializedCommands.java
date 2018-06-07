@@ -96,12 +96,12 @@ public class SerializedCommands {
     }
 
     /**
-     * Scales the points to the specifies width and height. Image ratio will be kept.
+     * Retrieves the scale. Image ratio will be kept.
      * @param maxWidth The maximum width
      * @param maxHeight The maximum height
-     * @return The new image dimensions [x,y]
+     * @return The new image dimensions [x, y, scaleX, scaleY]
      */
-    public int[] scale(int maxWidth, int maxHeight) {
+    public double[] getScale(int maxWidth, int maxHeight) {
         int[] dimensions = getBoundingDimensions();
         int dimX = dimensions[0];
         int dimY = dimensions[1];
@@ -112,12 +112,7 @@ public class SerializedCommands {
         double scaleX = imageWidth / (double) dimX;
         double scaleY = imageHeight / (double) dimY;
 
-        // scale all points
-        for(Command command : this.serializedCommands) {
-            command.scale(scaleX, scaleY);
-        }
-
-        return new int[]{imageWidth, imageHeight};
+        return new double[]{imageWidth, imageHeight, scaleX, scaleY};
     }
 
 }

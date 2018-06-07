@@ -12,7 +12,10 @@ public class SettingsHandler {
     public static Image APP_ICON = getResourceByString("plotter.png").convertToImage();
     public static Image JOYSTICK_CROSSHAIRS = getResourceByString("add.png").convertToImage();
 
-    public static CommPortIdentifier PORT;
+    public static CommPortIdentifier PORT = null;
+    public static int MAX_WIDTH_IMAGE = 650;
+    public static int MAX_HEIGHT_IMAGE = 750;
+
 
 
 

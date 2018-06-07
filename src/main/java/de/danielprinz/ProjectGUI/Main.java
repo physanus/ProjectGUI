@@ -1,6 +1,7 @@
 package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.drawing.DrawHelper;
+import de.danielprinz.ProjectGUI.exceptions.NoSuchFileException;
 import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
@@ -40,8 +41,6 @@ public class Main extends Application {
      * - Skalierung auch via UART übertragen? Eher nicht ...
      */
 
-    public static final int MAX_WIDTH_IMAGE = 650, MAX_HEIGHT_IMAGE = 750;
-
     public static boolean isUIDisabled = false;
 
     public static final boolean DEBUG = true;
@@ -73,7 +72,6 @@ public class Main extends Application {
         SettingsHandler.checkAvailableResources();
 
         instance = this;
-        //openFileHandler = new OpenFileHandler(new File("hi.png")); // TODO call when file is opened
         openFileHandler = new OpenFileHandler();
         connectionHandler = new ConnectionHandler();
 
@@ -114,17 +112,19 @@ public class Main extends Application {
                 return;
             }
 
-            openFileHandler.read(file); // TODO make async
-            BufferedImage bufferedImage;
             try {
 
-                bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_HEIGHT_IMAGE, true);
+                openFileHandler.read(file); // TODO make async
+                BufferedImage bufferedImage = openFileHandler.renderImage(true);
                 preview.setFitWidth(0);
                 preview.setFitHeight(0);
                 preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
 
             } catch (UnsupportedFileTypeException e1) {
                 FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
+                return;
+            } catch (NoSuchFileException e1) {
+                FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
                 return;
             }
         });
@@ -246,7 +246,7 @@ public class Main extends Application {
             try {
                 disableAll();
                 connectionHandler.connectIfNotConnected();
-                connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
+                connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
             } catch (SerialConectionException e) {
                 // TODO show dialog
                 // e.printStackTrace();
@@ -279,17 +279,19 @@ public class Main extends Application {
                 if(laptop.exists()) file = new File(laptop, "\\FH_Technikum_Wien_logo.hpgl");
                 else file = new File(computer, "\\FH_Technikum_Wien_logo.hpgl");
 
-                openFileHandler.read(file);
-                BufferedImage bufferedImage;
                 try {
 
-                    bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_HEIGHT_IMAGE, true);
+                    openFileHandler.read(file);
+                    BufferedImage bufferedImage = openFileHandler.renderImage(true);
                     preview.setFitWidth(0);
                     preview.setFitHeight(0);
                     preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
 
                 } catch (UnsupportedFileTypeException e1) {
                     FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
+                    return;
+                } catch (NoSuchFileException e) {
+                    FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
                     return;
                 }
             }).start();
@@ -375,4 +377,6 @@ public class Main extends Application {
         menuBar.setDisable(option);
         overlay.setCursor(option ? Cursor.DEFAULT : Cursor.HAND);
     }
+
+
 }

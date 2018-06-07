@@ -30,9 +30,10 @@ public class Command {
      * @param x The scale for the x value
      * @param y The scale for the y values
      */
-    public void scale(double x, double y) {
+    public Command scale(double x, double y) {
         this.x *= x;
         this.y *= y;
+        return this;
     }
 
 
@@ -41,10 +42,15 @@ public class Command {
         StringBuilder sb = new StringBuilder();
 
         sb.append(commandType.toString())
-                .append(y)
+                .append(x)
                 .append(",")
-                .append(y + ";");
+                .append(y);
 
         return sb.toString();
+    }
+
+
+    public Command copy() {
+        return new Command(commandType, x, y);
     }
 }

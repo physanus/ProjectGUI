@@ -33,7 +33,6 @@ public class DrawHelper {
     public static void drawLine(int x, int y) {
 
         Command command = new Command(commandType, x, y);
-        System.out.println(command);
 
         if(commandType.equals(CommandType.PU)) {
             moveTo = command;
@@ -64,19 +63,23 @@ public class DrawHelper {
                 double dx = node.getLayoutBounds().getMaxX() - BOUNDS.getMaxX();
                 double dy = node.getLayoutBounds().getMaxY() - BOUNDS.getMaxY();
 
-                dx *= SCALE;
-                dy *= -SCALE;
+                dx *= SCALE;  // positive when moving right, negative when moving left
+                dy *= -SCALE; // positive when moving up, negative when moving down
 
-                if(crosshairPositionX + (int)dx >= 0)
-                    crosshairPositionX += (int)dx;
-                else
+                if(crosshairPositionX + (int)dx <= 0)
                     crosshairPositionX = 0;
+                else if(crosshairPositionX + (int)dx > Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleX())
+                    crosshairPositionX = (int) (Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleX());
+                else
+                    crosshairPositionX += (int)dx;
+
 
                 if(crosshairPositionY + (int)dy <= 0)
-                    crosshairPositionY += (int)dy;
-                else
                     crosshairPositionY = 0;
-
+                else if(crosshairPositionY + (int)dy > Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleY())
+                    crosshairPositionY = (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleY());
+                else
+                    crosshairPositionY += (int)dy;
 
                 drawLine(crosshairPositionX, crosshairPositionY);
 
