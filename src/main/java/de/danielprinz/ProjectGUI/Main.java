@@ -2,7 +2,7 @@ package de.danielprinz.ProjectGUI;
 
 import de.danielprinz.ProjectGUI.drawing.DrawHelper;
 import de.danielprinz.ProjectGUI.exceptions.NoSuchFileException;
-import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
+import de.danielprinz.ProjectGUI.exceptions.SerialConnectionException;
 import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
@@ -247,10 +247,10 @@ public class Main extends Application {
                 disableAll();
                 connectionHandler.connectIfNotConnected();
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
-            } catch (SerialConectionException e) {
+            } catch (SerialConnectionException e) {
                 // TODO show dialog
                 // e.printStackTrace();
-                Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
+                Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format()));
                 if(DEBUG) System.err.println("No serial connection could be established");
             }
 
@@ -265,6 +265,9 @@ public class Main extends Application {
 
         innerPane.getChildren().addAll(preview, rightSide);
         mainPane.getChildren().addAll(menuBar, innerPane);
+
+
+        disableAll();
 
         Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
         window.setScene(scene);
@@ -288,10 +291,10 @@ public class Main extends Application {
                     preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
 
                 } catch (UnsupportedFileTypeException e1) {
-                    FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
+                    Platform.runLater(() -> FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format()));
                     return;
                 } catch (NoSuchFileException e) {
-                    FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
+                    Platform.runLater(() -> FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format()));
                     return;
                 }
             }).start();

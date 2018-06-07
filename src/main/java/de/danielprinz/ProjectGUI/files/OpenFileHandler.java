@@ -9,8 +9,6 @@ import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
 import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
 import de.danielprinz.ProjectGUI.resources.*;
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -29,13 +27,15 @@ public class OpenFileHandler {
         save();
     }
     public void save() {
-        System.out.println("saving...");
+        final Command finalCommand = new Command(CommandType.PU, 0, 0);
+        if(!fileHolder.getSerializedCommands().getLastValue().equals(finalCommand)) {
+            fileHolder.addCommand(finalCommand);
+        }
 
         try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(openFile))) {
-            // TODO save current document
-            /*for(;;) {
-
-            }*/
+            for(String line : this.fileHolder.getFileContent()) {
+                bufferedWriter.write(line + ";\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             FileErrorBox.display(FileErrorType.WRITE_ERROR, Main.WINDOW_TITLE, Strings.FILE_WRITE_ERROR.format());
@@ -63,6 +63,9 @@ public class OpenFileHandler {
             throw new NoSuchFileException();
         }
 
+        if(this.fileHolder.getFileContent().isEmpty())
+            throw new UnsupportedFileTypeException();
+
         // get dimenstions and apply scaler for preview
         double[] dimensions = this.fileHolder.getSerializedCommands().getScale(SettingsHandler.MAX_WIDTH_IMAGE, SettingsHandler.MAX_HEIGHT_IMAGE);
         int imageWidth = (int) dimensions[0];
@@ -77,6 +80,8 @@ public class OpenFileHandler {
 
         Main.getMouseListener().reset();
         DrawHelper.reset();
+
+        Main.enableAll();
     }
 
 
@@ -97,11 +102,9 @@ public class OpenFileHandler {
     /**
      * Generates a bufferedImage from the file input
      * @return The buffered image
-     * @throws UnsupportedFileTypeException Thrown in case the file contains statements the parser cannot interpret
      */
-    public BufferedImage renderImage(boolean background) throws UnsupportedFileTypeException {
+    public BufferedImage renderImage(boolean background)  {
 
-        // TODO exception when handling an empty file
         BufferedImage bufferedImage = new BufferedImage(this.fileHolder.getImageWidth(), this.fileHolder.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
         if(background) {
@@ -133,6 +136,17 @@ public class OpenFileHandler {
             oldCommand = command;
         }
 
+        graphics.setColor(Color.RED);
+
+        int x = DrawHelper.getCrosshairPositionX();
+        int y = DrawHelper.getCrosshairPositionY();
+        int size = 7;
+        // x1 y1 x2 y2
+        // bottom left to top right
+        graphics.drawLine(x - size, y + size, x + size, y - size);
+        // top left to bottom right
+        graphics.drawLine(x - size, y - size, x + size, y + size);
+
         return bufferedImage;
     }
 
@@ -141,14 +155,6 @@ public class OpenFileHandler {
     public void addCommand(Command command) {
         this.fileHolder.addCommand(command);
         this.fileChanged = true;
-        // regenerate preview image
-        try {
-            BufferedImage bufferedImage = renderImage(true);
-            Platform.runLater(() -> Main.preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null)));
-        } catch (UnsupportedFileTypeException e) {
-            // TODO handle
-            e.printStackTrace();
-        }
     }
 
 

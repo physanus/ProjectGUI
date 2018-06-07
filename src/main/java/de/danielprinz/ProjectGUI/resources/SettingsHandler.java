@@ -15,6 +15,9 @@ public class SettingsHandler {
     public static CommPortIdentifier PORT = null;
     public static int MAX_WIDTH_IMAGE = 650;
     public static int MAX_HEIGHT_IMAGE = 750;
+    public static double HANDDRAWING_SCALE = 1.2;
+    public static int SERIAL_CONNECTION_TIMEOUT = 2000;
+    public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 20;
 
 
 

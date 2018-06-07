@@ -61,6 +61,7 @@ public class SerializedCommands {
     public ArrayList<Command> getValues() {
         return serializedCommands;
     }
+    public Command getLastValue() { return serializedCommands.get(serializedCommands.size() - 1); }
     public boolean add(Command command) {
         return this.serializedCommands.add(command);
     }

@@ -53,4 +53,24 @@ public class Command {
     public Command copy() {
         return new Command(commandType, x, y);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Command command = (Command) o;
+
+        if (x != command.x) return false;
+        if (y != command.y) return false;
+        return commandType == command.commandType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = commandType != null ? commandType.hashCode() : 0;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        return result;
+    }
 }

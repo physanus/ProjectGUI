@@ -3,14 +3,13 @@ package de.danielprinz.ProjectGUI.io;
 import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.resources.Command;
 import de.danielprinz.ProjectGUI.resources.SerializedCommands;
+import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class SerialWriter implements Runnable {
-
-    private static final int COMMANDS_PER_SECOND = 20; // TODO add to settings
 
     private OutputStream out;
     private int mid = 0;
@@ -37,7 +36,7 @@ public class SerialWriter implements Runnable {
             }
 
             try {
-                Thread.sleep(1000 / COMMANDS_PER_SECOND);
+                Thread.sleep(1000 / SettingsHandler.SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,7 +68,7 @@ public class SerialWriter implements Runnable {
                 while(queue.size() > 0) {
                     Main.setCountingTitleForDrawing(serialized.getValues().size() - queue.size(), serialized.getValues().size());
                     try {
-                        Thread.sleep(1000 / COMMANDS_PER_SECOND);
+                        Thread.sleep(1000 / SettingsHandler.SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

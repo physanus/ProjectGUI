@@ -41,7 +41,18 @@ public class FileHolder {
     }
 
     public void addCommand(Command command) {
-        this.fileContent.add(command.toString());
+        if(serializedCommands.getLastValue().getCommandType().equals(command.getCommandType()) && command.getCommandType().equals(CommandType.PD)) {
+            // last and current command are both the same, here: PD
+            // ==> lets concatenate them
+
+            //this.fileContent.add(command);
+            String prevLine = this.fileContent.remove(this.fileContent.size() - 1);
+            this.fileContent.add(prevLine + "," + command.getX() + "," + command.getY());
+
+        } else {
+            this.fileContent.add(command.toString());
+        }
+
         this.serializedCommands.add(command);
         this.serializedCommandsScaled.add(command.copy().scale(this.scaleX, this.scaleY));
     }

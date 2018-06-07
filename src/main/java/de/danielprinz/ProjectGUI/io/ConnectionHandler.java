@@ -1,7 +1,7 @@
 package de.danielprinz.ProjectGUI.io;
 
 import de.danielprinz.ProjectGUI.Main;
-import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
+import de.danielprinz.ProjectGUI.exceptions.SerialConnectionException;
 import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import purejavacomm.*;
 
@@ -23,7 +23,7 @@ public class ConnectionHandler {
     private Thread disconnectedThread;
 
 
-    public void connectIfNotConnected() throws SerialConectionException {
+    public void connectIfNotConnected() throws SerialConnectionException {
         System.out.println("connectIfNotConnected(String portName)");
         if(serialReader == null || serialWriter == null || !serialReader.isRunning() || !serialWriter.isRunning())
             connect();
@@ -33,17 +33,17 @@ public class ConnectionHandler {
         new Thread(() -> {
             try {
                 connect();
-            } catch (SerialConectionException e) {
+            } catch (SerialConnectionException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
-    public void connect() throws SerialConectionException {
+    public void connect() throws SerialConnectionException {
         System.out.println("connect()");
         // http://rxtx.qbang.org/wiki/index.php/Two_way_communcation_with_the_serial_port
 
-        if(SettingsHandler.PORT.equals(null)) throw new SerialConectionException("Connection is null");
+        if(SettingsHandler.PORT.equals(null)) throw new SerialConnectionException("Connection is null");
 
         try {
 
@@ -52,7 +52,7 @@ public class ConnectionHandler {
 
                 return;
             } else {
-                CommPort commPort = SettingsHandler.PORT.open(Main.WINDOW_TITLE,2000); // TODO timeout to settings
+                CommPort commPort = SettingsHandler.PORT.open(Main.WINDOW_TITLE,SettingsHandler.SERIAL_CONNECTION_TIMEOUT);
 
                 if(commPort instanceof SerialPort) {
                     SerialPort serialPort = (SerialPort) commPort;
@@ -72,14 +72,14 @@ public class ConnectionHandler {
                     serialWriterThread.start();
                 } else {
                     System.err.println("Error: Only serial ports are handled.");
-                    throw new SerialConectionException();
+                    throw new SerialConnectionException();
                 }
             }
             System.out.println("Established serial connection to " + SettingsHandler.PORT.getName());
         } catch (UnsupportedCommOperationException | IOException | PortInUseException e) {
             //System.err.println("Failed connection to " + portName);
             setDisconnected(false);
-            throw new SerialConectionException();
+            throw new SerialConnectionException();
         }
 
     }
@@ -90,7 +90,7 @@ public class ConnectionHandler {
         System.out.println("setDisconnected()");
         if(disconnectedThread != null) return;
 
-        // TODO disable buttons
+        if(reconnect) Main.disableAll(); // will be enabled again in the Runnable
         if(serialReader != null) serialReader.setRunning(false);
         if(serialWriter != null) serialWriter.setRunning(false);
         //Main.addToCmdWindow("Serial device is not connected to " + Main.COM_PORT);
@@ -100,13 +100,11 @@ public class ConnectionHandler {
                 try {
                     Thread.sleep(2000);
                     connect();
-                    // set connected
-                    // TODO enable buttons
+                    Main.enableAll();
                     Main.clearCmdWindow();
                     disconnectedThread = null;
                     break;
-                } catch (Exception e1) {
-                }
+                } catch (Exception e1) { }
             }
         });
         if(reconnect) disconnectedThread.start();

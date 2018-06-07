@@ -3,12 +3,18 @@ package de.danielprinz.ProjectGUI.drawing;
 import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.resources.Command;
 import de.danielprinz.ProjectGUI.resources.CommandType;
+import de.danielprinz.ProjectGUI.resources.SettingsHandler;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
+
+import java.awt.image.BufferedImage;
 
 public class DrawHelper {
 
     private static CommandType commandType = CommandType.PU;
+    private static boolean skipCommand = true;
     private static Command moveTo; // used when pen is up and the user moves to a specific location. this saved a lot of data
 
     private static boolean threadIsEnabled = false;
@@ -17,10 +23,6 @@ public class DrawHelper {
 
     public static void setCommandType(CommandType ct) {
         commandType = ct;
-    }
-
-    public static CommandType getCommandType() {
-        return commandType;
     }
 
 
@@ -42,6 +44,13 @@ public class DrawHelper {
         if(moveTo != null) {
             Main.getOpenFileHandler().addCommand(moveTo);
             moveTo = null;
+            skipCommand = true;
+        }
+
+        if(skipCommand) {
+            // removes duplicates
+            skipCommand = false;
+            return;
         }
 
         Main.getOpenFileHandler().addCommand(command);
@@ -54,7 +63,6 @@ public class DrawHelper {
     public static void runMovementChecker(ImageView node) {
 
         final Bounds BOUNDS = node.getLayoutBounds();
-        final int SCALE = 2; // TODO to settings
 
         threadIsEnabled = true;
         new Thread(() -> {
@@ -63,8 +71,8 @@ public class DrawHelper {
                 double dx = node.getLayoutBounds().getMaxX() - BOUNDS.getMaxX();
                 double dy = node.getLayoutBounds().getMaxY() - BOUNDS.getMaxY();
 
-                dx *= SCALE;  // positive when moving right, negative when moving left
-                dy *= -SCALE; // positive when moving up, negative when moving down
+                dx *= SettingsHandler.HANDDRAWING_SCALE;  // positive when moving right, negative when moving left
+                dy *= -SettingsHandler.HANDDRAWING_SCALE; // positive when moving up, negative when moving down
 
                 if(crosshairPositionX + (int)dx <= 0)
                     crosshairPositionX = 0;
@@ -83,6 +91,10 @@ public class DrawHelper {
 
                 drawLine(crosshairPositionX, crosshairPositionY);
 
+                // regenerate preview image
+                BufferedImage bufferedImage = Main.getOpenFileHandler().renderImage(true);
+                Platform.runLater(() -> Main.preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null)));
+
 
                 try {
                     Thread.sleep(50);
@@ -98,4 +110,12 @@ public class DrawHelper {
         threadIsEnabled = false;
     }
 
+
+    public static int getCrosshairPositionX() {
+        return (int) (crosshairPositionX * Main.getOpenFileHandler().getFileHolder().getScaleX());
+    }
+
+    public static int getCrosshairPositionY() {
+        return (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() - crosshairPositionY * Main.getOpenFileHandler().getFileHolder().getScaleY());
+    }
 }
