@@ -2,12 +2,16 @@ package de.danielprinz.ProjectGUI.io;
 
 import de.danielprinz.ProjectGUI.Main;
 import de.danielprinz.ProjectGUI.exceptions.SerialConectionException;
+import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import purejavacomm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Random;
 
 public class ConnectionHandler {
 
@@ -19,34 +23,36 @@ public class ConnectionHandler {
     private Thread disconnectedThread;
 
 
-    public void connectIfNotConnected(String portName) throws SerialConectionException {
+    public void connectIfNotConnected() throws SerialConectionException {
         System.out.println("connectIfNotConnected(String portName)");
         if(serialReader == null || serialWriter == null || !serialReader.isRunning() || !serialWriter.isRunning())
-            connect(portName);
+            connect();
     }
 
     public void connectAsync(String portName) {
         new Thread(() -> {
             try {
-                connect(portName);
+                connect();
             } catch (SerialConectionException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
-    public void connect(String portName) throws SerialConectionException {
-        System.out.println("connect(String portName)");
+    public void connect() throws SerialConectionException {
+        System.out.println("connect()");
         // http://rxtx.qbang.org/wiki/index.php/Two_way_communcation_with_the_serial_port
 
+        if(SettingsHandler.PORT.equals(null)) throw new SerialConectionException("Connection is null");
+
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
-            if(portIdentifier.isCurrentlyOwned()) {
+
+            if(SettingsHandler.PORT.isCurrentlyOwned()) {
                 // we already connected somewhen before
 
                 return;
             } else {
-                CommPort commPort = portIdentifier.open(Main.WINDOW_TITLE,2000); // TODO timeout to settings
+                CommPort commPort = SettingsHandler.PORT.open(Main.WINDOW_TITLE,2000); // TODO timeout to settings
 
                 if(commPort instanceof SerialPort) {
                     SerialPort serialPort = (SerialPort) commPort;
@@ -69,10 +75,10 @@ public class ConnectionHandler {
                     throw new SerialConectionException();
                 }
             }
-            System.out.println("Established serial connection to " + portName);
-        } catch (UnsupportedCommOperationException | IOException | NoSuchPortException | PortInUseException e) {
+            System.out.println("Established serial connection to " + SettingsHandler.PORT.getName());
+        } catch (UnsupportedCommOperationException | IOException | PortInUseException e) {
             //System.err.println("Failed connection to " + portName);
-            setDisconnected(portName, false);
+            setDisconnected(false);
             throw new SerialConectionException();
         }
 
@@ -80,7 +86,7 @@ public class ConnectionHandler {
 
 
 
-    public void setDisconnected(String portName, boolean reconnect) {
+    public void setDisconnected(boolean reconnect) {
         System.out.println("setDisconnected()");
         if(disconnectedThread != null) return;
 
@@ -93,7 +99,7 @@ public class ConnectionHandler {
             while(true) {
                 try {
                     Thread.sleep(2000);
-                    connect(portName);
+                    connect();
                     // set connected
                     // TODO enable buttons
                     Main.clearCmdWindow();
@@ -116,15 +122,22 @@ public class ConnectionHandler {
     }
 
 
-    public void autoChooseSerialPort() {
+    public CommPortIdentifier autoChooseSerialPort() {
+        List<CommPortIdentifier> ports = getAllPorts();
+        if(ports.isEmpty()) return null;
+        return ports.get((new Random()).nextInt(ports.size()));
+    }
 
-        /*Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+    public List<CommPortIdentifier> getAllPorts() {
+        ArrayList<CommPortIdentifier> result = new ArrayList<>();
+        Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
+
         while(portIdentifiers.hasMoreElements()) {
             CommPortIdentifier portid = portIdentifiers.nextElement();
-            System.out.println(portid.getName());
-            return portid.getName();
-        }*/
+            result.add(portid);
+        }
 
+        return result;
     }
 
 }

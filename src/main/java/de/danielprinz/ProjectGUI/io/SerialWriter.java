@@ -22,7 +22,7 @@ public class SerialWriter implements Runnable {
         this.out = out;
     }
 
-    public void run() {
+     public void run() {
         while(true) {
             if(!(queue == null) && queue.size() > 0) {
                 String message = "#" + getMid() + ":" + queue.get(0).toString() + "$";

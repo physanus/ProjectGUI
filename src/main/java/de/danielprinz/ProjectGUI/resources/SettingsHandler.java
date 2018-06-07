@@ -2,6 +2,7 @@ package de.danielprinz.ProjectGUI.resources;
 
 import de.danielprinz.ProjectGUI.Main;
 import javafx.scene.image.Image;
+import purejavacomm.CommPortIdentifier;
 
 import java.lang.reflect.Field;
 
@@ -10,6 +11,8 @@ public class SettingsHandler {
     private static int AVAILABLE = -1;
     public static Image APP_ICON = getResourceByString("plotter.png").convertToImage();
     public static Image JOYSTICK_CROSSHAIRS = getResourceByString("add.png").convertToImage();
+
+    public static CommPortIdentifier PORT;
 
 
 

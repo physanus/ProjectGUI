@@ -44,7 +44,6 @@ public class Main extends Application {
 
     public static final int MAX_WIDTH_IMAGE = 650, MAX_HEIGHT_IMAGE = 750;
 
-    public static final String COM_PORT = "COM1";
     public static boolean isUIDisabled = false;
 
     public static final boolean DEBUG = true;
@@ -90,6 +89,8 @@ public class Main extends Application {
         openFileHandler = new OpenFileHandler();
         connectionHandler = new ConnectionHandler();
 
+        SettingsHandler.PORT = connectionHandler.autoChooseSerialPort();
+
         window = primaryStage;
         window.setTitle(WINDOW_TITLE);
         if(SettingsHandler.checkAvailableResources())
@@ -129,7 +130,7 @@ public class Main extends Application {
             BufferedImage bufferedImage;
             try {
 
-                bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_WIDTH_IMAGE, true);
+                bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_HEIGHT_IMAGE, true);
                 preview.setFitWidth(0);
                 preview.setFitHeight(0);
                 preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
@@ -256,11 +257,11 @@ public class Main extends Application {
             // send the commands via uart
             try {
                 disableAll();
-                connectionHandler.connectIfNotConnected(Main.COM_PORT);
+                connectionHandler.connectIfNotConnected();
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getSerialized(), true);
             } catch (SerialConectionException e) {
                 // TODO show dialog
-                //e.printStackTrace();
+                // e.printStackTrace();
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format("test")));
                 if(DEBUG) System.err.println("No serial connection could be established");
             }
@@ -294,7 +295,7 @@ public class Main extends Application {
                 BufferedImage bufferedImage;
                 try {
 
-                    bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_WIDTH_IMAGE, true);
+                    bufferedImage = openFileHandler.renderImage(Main.MAX_WIDTH_IMAGE, Main.MAX_HEIGHT_IMAGE, true);
                     preview.setFitWidth(0);
                     preview.setFitHeight(0);
                     preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
