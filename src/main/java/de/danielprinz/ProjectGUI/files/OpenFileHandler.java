@@ -101,7 +101,7 @@ public class OpenFileHandler {
     public CloseSaveBoxResult showDialogBox() {
         if(!this.fileChanged) return CloseSaveBoxResult.NOSAVE; // TODO implement fileChanged variable
         CloseSaveBoxResult result = CloseSaveBox.display(Main.WINDOW_TITLE, Strings.SAVE_CHANGES_QUESTION.format(this.openFile.getName())); // TODO show the current filename
-        if(result == null) result.equals(CloseSaveBoxResult.CANCEL);
+        if(!(result == null)) result.equals(CloseSaveBoxResult.CANCEL);
         return result;
     }
 
