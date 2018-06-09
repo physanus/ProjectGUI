@@ -32,7 +32,6 @@ public class SerialReader implements Runnable{
                     // removes non-printable characters from Unicode
                     out = out.replaceAll("\\p{C}", "");
 
-                    Main.addToCmdWindow(out);
                     sb = new StringBuilder();
                 }
             }

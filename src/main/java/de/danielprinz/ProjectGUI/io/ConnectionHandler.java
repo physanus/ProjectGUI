@@ -101,7 +101,6 @@ public class ConnectionHandler {
                     Thread.sleep(2000);
                     connect();
                     Main.enableAll();
-                    Main.clearCmdWindow();
                     disconnectedThread = null;
                     break;
                 } catch (Exception e1) { }

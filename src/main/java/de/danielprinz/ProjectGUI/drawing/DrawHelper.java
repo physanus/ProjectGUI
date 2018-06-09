@@ -93,7 +93,7 @@ public class DrawHelper {
 
                 // regenerate preview image
                 BufferedImage bufferedImage = Main.getOpenFileHandler().renderImage(true);
-                Platform.runLater(() -> Main.preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null)));
+                Platform.runLater(() -> Main.getPreview().setImage(SwingFXUtils.toFXImage(bufferedImage, null)));
 
 
                 try {

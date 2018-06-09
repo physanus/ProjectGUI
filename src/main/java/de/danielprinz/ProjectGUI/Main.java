@@ -43,7 +43,7 @@ public class Main extends Application {
 
     private static Stage window;
     private static MenuBar menuBar;
-    public static ImageView preview; // TODO getter
+    private static ImageView preview;
     private static ImageView crosshair;
     private static Circle overlay;
     private static Button penToggle;
@@ -242,8 +242,6 @@ public class Main extends Application {
                 connectionHandler.connectIfNotConnected();
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
             } catch (SerialConnectionException e) {
-                // TODO show dialog
-                // e.printStackTrace();
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format()));
                 if(DEBUG) System.err.println("No serial connection could be established");
             }
@@ -306,30 +304,7 @@ public class Main extends Application {
         System.exit(0);
     }
 
-
-    public static Main getInstance() {
-        return instance;
-    }
-
-
-    /**
-     * Adds the given line to a text->scrollPane
-     * @param line The line
-     */
-    public static void addToCmdWindow(String line) {
-        // TODO implement
-        //Platform.runLater(() -> text.setText(text.getText().equals("") ? text.getText() + line : text.getText() + "\n" + line));
-        //scrollPane.setVvalue(1); // scroll to the bottom
-        System.out.println("DEBUG: " + line);
-    }
-
-    /**
-     * Clears the text of the cmdWindow
-     */
-    public static void clearCmdWindow() {
-        //Platform.runLater(() -> text.setText(""));
-    }
-
+    
 
     public static ConnectionHandler getConnectionHandler() {
         return connectionHandler;
@@ -375,5 +350,7 @@ public class Main extends Application {
         overlay.setCursor(option ? Cursor.DEFAULT : Cursor.HAND);
     }
 
-
+    public static ImageView getPreview() {
+        return preview;
+    }
 }
