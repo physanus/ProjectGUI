@@ -12,10 +12,10 @@ public class SettingsHandler {
     public static Image APP_ICON = getResourceByString("plotter.png").convertToImage();
     public static Image JOYSTICK_CROSSHAIRS = getResourceByString("add.png").convertToImage();
 
-    public static CommPortIdentifier PORT = null;
-    public static int MAX_WIDTH_IMAGE = 650;
-    public static int MAX_HEIGHT_IMAGE = 750;
-    public static double HANDDRAWING_SCALE = 1.2;
+    public static CommPortIdentifier PORT;
+    public static int PREVIEW_IMAGE_MAX_WIDTH = 650;
+    public static int PREVIEW_IMAGE_MAX_HEIGHT = 750;
+    public static double HANDDRAWING_MOVEMENT_SPEED = 1.2;
     public static int SERIAL_CONNECTION_TIMEOUT = 2000;
     public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 20;
 
@@ -55,6 +55,10 @@ public class SettingsHandler {
 
                 // Get value
                 Object value = field.get(null);
+                if(clazz.equals(CommPortIdentifier.class)) {
+                    // this will be null and it is okay since we check later
+                    continue;
+                }
                 if(value == null) {
                     // the resource could not be found
                     System.err.println(Strings.RESOURCE_NOT_FOUND.format(field.getName()));

@@ -7,10 +7,7 @@ import de.danielprinz.ProjectGUI.exceptions.UnsupportedFileTypeException;
 import de.danielprinz.ProjectGUI.files.OpenFileHandler;
 import de.danielprinz.ProjectGUI.gui.MouseListener;
 import de.danielprinz.ProjectGUI.io.ConnectionHandler;
-import de.danielprinz.ProjectGUI.popupHandler.CloseSaveBoxResult;
-import de.danielprinz.ProjectGUI.popupHandler.ConnectionErrorBox;
-import de.danielprinz.ProjectGUI.popupHandler.FileErrorBox;
-import de.danielprinz.ProjectGUI.popupHandler.FileErrorType;
+import de.danielprinz.ProjectGUI.popupHandler.*;
 import de.danielprinz.ProjectGUI.resources.CommandType;
 import de.danielprinz.ProjectGUI.resources.SettingsHandler;
 import de.danielprinz.ProjectGUI.resources.Strings;
@@ -150,7 +147,7 @@ public class Main extends Application {
         });
         MenuItem settings = new MenuItem(Strings.MENUBAR_SETTINGS.format());
         settings.setOnAction(e -> {
-            // TODO
+            SettingsBox.display("Settings");
         });
 
         MenuItem close = new MenuItem(Strings.MENUBAR_CLOSE.format());

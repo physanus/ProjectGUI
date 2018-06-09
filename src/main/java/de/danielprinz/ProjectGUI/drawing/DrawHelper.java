@@ -71,8 +71,8 @@ public class DrawHelper {
                 double dx = node.getLayoutBounds().getMaxX() - BOUNDS.getMaxX();
                 double dy = node.getLayoutBounds().getMaxY() - BOUNDS.getMaxY();
 
-                dx *= SettingsHandler.HANDDRAWING_SCALE;  // positive when moving right, negative when moving left
-                dy *= -SettingsHandler.HANDDRAWING_SCALE; // positive when moving up, negative when moving down
+                dx *= SettingsHandler.HANDDRAWING_MOVEMENT_SPEED;  // positive when moving right, negative when moving left
+                dy *= -SettingsHandler.HANDDRAWING_MOVEMENT_SPEED; // positive when moving up, negative when moving down
 
                 if(crosshairPositionX + (int)dx <= 0)
                     crosshairPositionX = 0;
