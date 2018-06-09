@@ -33,11 +33,6 @@ import java.io.File;
 
 public class Main extends Application {
 
-    /**
-     * TODO
-     * - Skalierung auch via UART übertragen? Eher nicht ...
-     */
-
     public static boolean isUIDisabled = false;
 
     public static final boolean DEBUG = false;
