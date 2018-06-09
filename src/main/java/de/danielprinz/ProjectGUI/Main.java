@@ -103,21 +103,21 @@ public class Main extends Application {
                 return;
             }
 
-            try {
-
-                openFileHandler.read(file); // TODO make async
-                BufferedImage bufferedImage = openFileHandler.renderImage(true);
-                preview.setFitWidth(0);
-                preview.setFitHeight(0);
-                preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
-
-            } catch (UnsupportedFileTypeException e1) {
-                FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format());
-                return;
-            } catch (NoSuchFileException e1) {
-                FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format());
-                return;
-            }
+            new Thread(() -> {
+                try {
+                    openFileHandler.read(file);
+                    BufferedImage bufferedImage = openFileHandler.renderImage(true);
+                    preview.setFitWidth(0);
+                    preview.setFitHeight(0);
+                    preview.setImage(SwingFXUtils.toFXImage(bufferedImage, null));
+                } catch (UnsupportedFileTypeException e1) {
+                    Platform.runLater(() -> FileErrorBox.display(FileErrorType.NOT_COMPATIBLE, WINDOW_TITLE, Strings.FILE_ERROR_NOT_COMPATIBLE.format()));
+                    return;
+                } catch (NoSuchFileException e1) {
+                    Platform.runLater(() -> FileErrorBox.display(FileErrorType.NO_SUCH_FILE, Main.WINDOW_TITLE, Strings.FILE_ERROR_NO_SUCH_FILE.format()));
+                    return;
+                }
+            }).start();
         });
 
         MenuItem save = new MenuItem(Strings.MENUBAR_SAVEAS.format());
@@ -304,7 +304,7 @@ public class Main extends Application {
         System.exit(0);
     }
 
-    
+
 
     public static ConnectionHandler getConnectionHandler() {
         return connectionHandler;
