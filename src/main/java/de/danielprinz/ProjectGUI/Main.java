@@ -35,7 +35,7 @@ public class Main extends Application {
 
     public static boolean isUIDisabled = false;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private final static int WINDOW_WIDTH = 800;
     private final static int WINDOW_HEIGHT = 860;
@@ -49,7 +49,6 @@ public class Main extends Application {
     private static Button penToggle;
     private static Button draw;
 
-    private static Main instance;
     private static OpenFileHandler openFileHandler;
     private static ConnectionHandler connectionHandler;
     private static MouseListener mouseListener;
@@ -63,7 +62,6 @@ public class Main extends Application {
 
         SettingsHandler.checkAvailableResources();
 
-        instance = this;
         openFileHandler = new OpenFileHandler();
         connectionHandler = new ConnectionHandler();
 
@@ -241,7 +239,7 @@ public class Main extends Application {
                 disableAll(true);
                 connectionHandler.connectIfNotConnected();
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
-            } catch (SerialConnectionException e) {
+            } catch (SerialConnectionException | NullPointerException e) {
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format()));
                 if(DEBUG) System.err.println("No serial connection could be established");
             }

@@ -34,7 +34,7 @@ public class SettingsBox {
             window.getIcons().add(SettingsHandler.APP_ICON);
 
         window.setTitle(title);
-        window.setMinWidth(250);
+        window.setMinWidth(450);
         window.setMinHeight(290);
 
         FontLoader fontLoader = Toolkit.getToolkit().getFontLoader();
@@ -77,7 +77,7 @@ public class SettingsBox {
         /*
          * preview image width
          */
-        Label prevImgWidthLabel = new Label("Preview image width:");
+        Label prevImgWidthLabel = new Label("Preview image max width:");
         prevImgWidthLabel.setMinWidth(fontLoader.computeStringWidth(prevImgWidthLabel.getText(), prevImgWidthLabel.getFont()));
         GridPane.setConstraints(prevImgWidthLabel, 0, 1);
 
@@ -96,7 +96,7 @@ public class SettingsBox {
         /*
          * preview image height
          */
-        Label prevImgHeightLabel = new Label("Preview image height:");
+        Label prevImgHeightLabel = new Label("Preview image max height:");
         prevImgHeightLabel.setMinWidth(fontLoader.computeStringWidth(prevImgHeightLabel.getText(), prevImgHeightLabel.getFont()));
         GridPane.setConstraints(prevImgHeightLabel, 0, 2);
 
