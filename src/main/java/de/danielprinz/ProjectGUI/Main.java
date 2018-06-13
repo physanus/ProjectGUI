@@ -241,7 +241,6 @@ public class Main extends Application {
                 connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
             } catch (SerialConnectionException | NullPointerException e) {
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format()));
-                if(DEBUG) System.err.println("No serial connection could be established");
             }
 
         });
