@@ -8,9 +8,10 @@ public class FileHolder {
 
     private ArrayList<String> fileContent = new ArrayList<>();
     private SerializedCommands serializedCommands = new SerializedCommands();
-    private SerializedCommands serializedCommandsScaled = new SerializedCommands();
-    private double scaleX = 1;
-    private double scaleY = 1;
+    private SerializedCommands serializedCommandsScaledPreview = new SerializedCommands();
+    private SerializedCommands serializedCommandsScaledPrint = new SerializedCommands();
+    private double scaleXPreview = 1;
+    private double scaleYPreview = 1;
     private int imageWidth = 0;
     private int imageHeight = 0;
 
@@ -23,20 +24,35 @@ public class FileHolder {
         return serializedCommands;
     }
 
-    public SerializedCommands getSerializedCommandsScaled() {
-        return serializedCommandsScaled;
+    public SerializedCommands getSerializedCommandsScaledPreview() {
+        return serializedCommandsScaledPreview;
     }
 
-    public void updateScale(double scaleX, double scaleY) {
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
+    public SerializedCommands getSerializedCommandsScaledPrint() {
+        updateScalePrint();
+        return serializedCommandsScaledPrint;
+    }
+
+    public void updateScalePreview(double scaleX, double scaleY) {
+        this.scaleXPreview = scaleX;
+        this.scaleYPreview = scaleY;
 
         // update the scale
-        serializedCommandsScaled = new SerializedCommands();
+        serializedCommandsScaledPreview = new SerializedCommands();
         for(Command command : this.serializedCommands.getValues()) {
             command = command.copy();
             command.scale(scaleX, scaleY);
-            this.serializedCommandsScaled.add(command);
+            this.serializedCommandsScaledPreview.add(command);
+        }
+    }
+
+    public void updateScalePrint() {
+        // update the scale
+        serializedCommandsScaledPrint = new SerializedCommands();
+        for(Command command : this.serializedCommands.getValues()) {
+            command = command.copy();
+            command.scale(SettingsHandler.PRINT_SCALE);
+            this.serializedCommandsScaledPrint.add(command);
         }
     }
 
@@ -54,15 +70,10 @@ public class FileHolder {
         }
 
         this.serializedCommands.add(command);
-        this.serializedCommandsScaled.add(command.copy().scale(this.scaleX, this.scaleY));
+        this.serializedCommandsScaledPreview.add(command.copy().scale(this.scaleXPreview, this.scaleYPreview));
+        this.serializedCommandsScaledPrint.add(command.copy().scale(SettingsHandler.PRINT_SCALE, SettingsHandler.PRINT_SCALE));
     }
 
-    public void addScaledCommand(Command command) {
-        this.serializedCommandsScaled.add(command);
-        command = command.copy().scale(1/scaleX, 1/scaleY);
-        this.fileContent.add(command.toString());
-        this.serializedCommands.add(command);
-    }
 
     /**
      * Adds a raw line/single command to the fileHolder
@@ -121,11 +132,11 @@ public class FileHolder {
         this.imageHeight = imageHeight;
     }
 
-    public double getScaleX() {
-        return scaleX;
+    public double getScaleXPreview() {
+        return scaleXPreview;
     }
 
-    public double getScaleY() {
-        return scaleY;
+    public double getScaleYPreview() {
+        return scaleYPreview;
     }
 }

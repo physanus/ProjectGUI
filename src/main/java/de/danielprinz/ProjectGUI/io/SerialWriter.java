@@ -27,8 +27,7 @@ public class SerialWriter implements Runnable {
                 String message = "#" + getMid() + ":" + queue.get(0).toString() + "$";
                 try {
                     out.write(message.getBytes());
-                    System.out.println("sent: " + message);
-                    System.out.println();
+                    if(Main.DEBUG) System.out.println("sent: " + message);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

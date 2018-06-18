@@ -26,13 +26,23 @@ public class Command {
 
 
     /**
-     * Scales x and y with the specifies value. 1 = no scale, <1 smaller, >1 bigger
+     * Scales x and y with the specified value. 1 = no scale, <1 smaller, >1 bigger
      * @param x The scale for the x value
      * @param y The scale for the y values
      */
     public Command scale(double x, double y) {
         this.x *= x;
         this.y *= y;
+        return this;
+    }
+
+    /**
+     * Scales x and y with the specified value. 1 = no scale, <1 smaller, >1 bigger
+     * @param scale The scale
+     */
+    public Command scale(double scale) {
+        this.x *= scale;
+        this.y *= scale;
         return this;
     }
 

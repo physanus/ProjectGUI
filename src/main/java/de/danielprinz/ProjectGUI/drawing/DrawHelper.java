@@ -76,16 +76,16 @@ public class DrawHelper {
 
                 if(crosshairPositionX + (int)dx <= 0)
                     crosshairPositionX = 0;
-                else if(crosshairPositionX + (int)dx > Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleX())
-                    crosshairPositionX = (int) (Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleX());
+                else if(crosshairPositionX + (int)dx > Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleXPreview())
+                    crosshairPositionX = (int) (Main.getOpenFileHandler().getFileHolder().getImageWidth() / Main.getOpenFileHandler().getFileHolder().getScaleXPreview());
                 else
                     crosshairPositionX += (int)dx;
 
 
                 if(crosshairPositionY + (int)dy <= 0)
                     crosshairPositionY = 0;
-                else if(crosshairPositionY + (int)dy > Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleY())
-                    crosshairPositionY = (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleY());
+                else if(crosshairPositionY + (int)dy > Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleYPreview())
+                    crosshairPositionY = (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() / Main.getOpenFileHandler().getFileHolder().getScaleYPreview());
                 else
                     crosshairPositionY += (int)dy;
 
@@ -112,10 +112,10 @@ public class DrawHelper {
 
 
     public static int getCrosshairPositionX() {
-        return (int) (crosshairPositionX * Main.getOpenFileHandler().getFileHolder().getScaleX());
+        return (int) (crosshairPositionX * Main.getOpenFileHandler().getFileHolder().getScaleXPreview());
     }
 
     public static int getCrosshairPositionY() {
-        return (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() - crosshairPositionY * Main.getOpenFileHandler().getFileHolder().getScaleY());
+        return (int) (Main.getOpenFileHandler().getFileHolder().getImageHeight() - crosshairPositionY * Main.getOpenFileHandler().getFileHolder().getScaleYPreview());
     }
 }

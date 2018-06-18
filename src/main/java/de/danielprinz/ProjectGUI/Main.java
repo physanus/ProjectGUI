@@ -35,7 +35,7 @@ public class Main extends Application {
 
     public static boolean isUIDisabled = false;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private final static int WINDOW_WIDTH = 800;
     private final static int WINDOW_HEIGHT = 860;
@@ -238,7 +238,7 @@ public class Main extends Application {
             try {
                 disableAll(true);
                 connectionHandler.connectIfNotConnected();
-                connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommands(), true);
+                connectionHandler.getSerialWriter().sendUART(openFileHandler.getFileHolder().getSerializedCommandsScaledPrint(), true);
             } catch (SerialConnectionException | NullPointerException e) {
                 Platform.runLater(() -> ConnectionErrorBox.display(Main.WINDOW_TITLE, Strings.CONNECTION_ERROR_DIALOGUE.format()));
             }

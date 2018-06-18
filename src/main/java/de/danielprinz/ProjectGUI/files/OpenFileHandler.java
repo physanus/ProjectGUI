@@ -78,12 +78,12 @@ public class OpenFileHandler {
         double[] dimensions = this.fileHolder.getSerializedCommands().getScale(SettingsHandler.PREVIEW_IMAGE_MAX_WIDTH, SettingsHandler.PREVIEW_IMAGE_MAX_HEIGHT);
         int imageWidth = (int) dimensions[0];
         int imageHeight = (int) dimensions[1];
-        double scaleX = dimensions[2];
-        double scaleY = dimensions[3];
+        double scaleXPreview = dimensions[2];
+        double scaleYPreview = dimensions[3];
 
         this.fileHolder.setImageWidth(imageWidth);
         this.fileHolder.setImageHeight(imageHeight);
-        this.fileHolder.updateScale(scaleX, scaleY);
+        this.fileHolder.updateScalePreview(scaleXPreview, scaleYPreview);
 
 
         Main.getMouseListener().reset();
@@ -122,7 +122,7 @@ public class OpenFileHandler {
         graphics.setColor(Color.BLACK);
 
         Command oldCommand = null;
-        for(Command command : this.fileHolder.getSerializedCommandsScaled().getValues()) {
+        for(Command command : this.fileHolder.getSerializedCommandsScaledPreview().getValues()) {
             // bufferedImage: (0, 0) is at the top left
             // command:       (0, 0) is at the bottom left
 
