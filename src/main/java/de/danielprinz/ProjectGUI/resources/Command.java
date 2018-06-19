@@ -59,6 +59,16 @@ public class Command {
         return sb.toString();
     }
 
+    public String toPrintableString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(commandType.toString())
+                .append(",")
+                .append(x)
+                .append(",")
+                .append(y);
+        return sb.toString();
+    }
+
 
     public Command copy() {
         return new Command(commandType, x, y);

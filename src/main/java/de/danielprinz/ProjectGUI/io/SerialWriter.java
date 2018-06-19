@@ -24,7 +24,7 @@ public class SerialWriter implements Runnable {
      public void run() {
         while(true) {
             if(!(queue == null) && queue.size() > 0) {
-                String message = "#" + getMid() + ":" + queue.get(0).toString() + "$";
+                String message = "#" + queue.get(0).toPrintableString() + "$";
                 try {
                     out.write(message.getBytes());
                     if(Main.DEBUG) System.out.println("sent: " + message);

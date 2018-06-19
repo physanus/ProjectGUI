@@ -74,7 +74,7 @@ public class OpenFileHandler {
         if(this.fileHolder.getFileContent().isEmpty())
             throw new UnsupportedFileTypeException();
 
-        // get dimenstions and apply scaler for preview
+        // get dimensions and apply scaler for preview
         double[] dimensions = this.fileHolder.getSerializedCommands().getScale(SettingsHandler.PREVIEW_IMAGE_MAX_WIDTH, SettingsHandler.PREVIEW_IMAGE_MAX_HEIGHT);
         int imageWidth = (int) dimensions[0];
         int imageHeight = (int) dimensions[1];

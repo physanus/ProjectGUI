@@ -110,10 +110,10 @@ public class SerializedCommands {
         double scale = Math.min((double)maxWidth/dimX, (double)maxHeight/dimY);
         int imageWidth = (int) (dimX * scale);
         int imageHeight = (int) (dimY * scale);
-        double scaleX = imageWidth / (double) dimX;
-        double scaleY = imageHeight / (double) dimY;
+        double scaleXPreview = imageWidth / (double) dimX;
+        double scaleYPreview = imageHeight / (double) dimY;
 
-        return new double[]{imageWidth, imageHeight, scaleX, scaleY};
+        return new double[]{imageWidth, imageHeight, scaleXPreview, scaleYPreview};
     }
 
 }

@@ -47,12 +47,27 @@ public class FileHolder {
     }
 
     public void updateScalePrint() {
-        // update the scale
+
+        // get dimensions and apply scaler for preview
+        double[] dimensions = getSerializedCommands().getScale(SettingsHandler.PRINT_IMAGE_MAX_WIDTH, SettingsHandler.PRINT_IMAGE_MAX_HEIGHT);
+        int imageWidth = (int) dimensions[0];
+        int imageHeight = (int) dimensions[1];
+        double scaleXPrint = dimensions[2];
+        double scaleYPrint = dimensions[3];
+
         serializedCommandsScaledPrint = new SerializedCommands();
+        Command previousCommand = null;
         for(Command command : this.serializedCommands.getValues()) {
             command = command.copy();
-            command.scale(SettingsHandler.PRINT_SCALE);
-            this.serializedCommandsScaledPrint.add(command);
+            if(scaleXPrint < 1 || scaleYPrint < 1) {
+                // update the scale
+                command.scale(scaleXPrint, scaleYPrint);
+            }
+
+            if(previousCommand == null || !previousCommand.equals(command))
+                this.serializedCommandsScaledPrint.add(command);
+
+            previousCommand = command;
         }
     }
 
@@ -71,7 +86,7 @@ public class FileHolder {
 
         this.serializedCommands.add(command);
         this.serializedCommandsScaledPreview.add(command.copy().scale(this.scaleXPreview, this.scaleYPreview));
-        this.serializedCommandsScaledPrint.add(command.copy().scale(SettingsHandler.PRINT_SCALE, SettingsHandler.PRINT_SCALE));
+        this.serializedCommandsScaledPrint.add(command.copy().scale(SettingsHandler.PRINT_IMAGE_MAX_WIDTH, SettingsHandler.PRINT_IMAGE_MAX_HEIGHT));
     }
 
 

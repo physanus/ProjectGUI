@@ -35,7 +35,7 @@ public class SettingsBox {
 
         window.setTitle(title);
         window.setMinWidth(450);
-        window.setMinHeight(375);
+        window.setMinHeight(405);
 
         FontLoader fontLoader = Toolkit.getToolkit().getFontLoader();
 
@@ -114,30 +114,49 @@ public class SettingsBox {
         GridPane.setConstraints(prevImgHeightTextField, 1, 2);
 
         /*
-         * print image scale
+         * print image max width
          */
-        Label printImgScaleLabel = new Label("Print image scale:");
-        printImgScaleLabel.setMinWidth(fontLoader.computeStringWidth(printImgScaleLabel.getText(), printImgScaleLabel.getFont()));
-        GridPane.setConstraints(printImgScaleLabel, 0, 3);
+        Label printImgWidthLabel = new Label("Print image max width:");
+        printImgWidthLabel.setMinWidth(fontLoader.computeStringWidth(printImgWidthLabel.getText(), printImgWidthLabel.getFont()));
+        GridPane.setConstraints(printImgWidthLabel, 0, 3);
 
-        TextField printImgScaleTextField = new TextField(String.valueOf(SettingsHandler.PRINT_SCALE));
+        TextField printImgWidthTextField = new TextField(String.valueOf(SettingsHandler.PRINT_IMAGE_MAX_WIDTH));
         // force the field to be numeric only
-        printImgScaleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        printImgWidthTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals("")) return;
             try {
-                Double.parseDouble(newValue);
+                Integer.parseInt(newValue);
             } catch (NumberFormatException e) {
-                printImgScaleTextField.setText(oldValue);
+                printImgWidthTextField.setText(oldValue);
             }
         });
-        GridPane.setConstraints(printImgScaleTextField, 1, 3);
+        GridPane.setConstraints(printImgWidthTextField, 1, 3);
+
+        /*
+         * print image max height
+         */
+        Label printImgHeightLabel = new Label("Print image max height:");
+        printImgHeightLabel.setMinWidth(fontLoader.computeStringWidth(printImgHeightLabel.getText(), printImgHeightLabel.getFont()));
+        GridPane.setConstraints(printImgHeightLabel, 0, 4);
+
+        TextField printImgHeightTextField = new TextField(String.valueOf(SettingsHandler.PRINT_IMAGE_MAX_HEIGHT));
+        // force the field to be numeric only
+        printImgHeightTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals("")) return;
+            try {
+                Integer.parseInt(newValue);
+            } catch (NumberFormatException e) {
+                printImgHeightTextField.setText(oldValue);
+            }
+        });
+        GridPane.setConstraints(printImgHeightTextField, 1, 4);
 
         /*
          * Handdrawing movement speed
          */
         Label handdrawingMovementSpeedLabel = new Label("Handdrawing movement speed:");
         handdrawingMovementSpeedLabel.setMinWidth(fontLoader.computeStringWidth(handdrawingMovementSpeedLabel.getText(), handdrawingMovementSpeedLabel.getFont()));
-        GridPane.setConstraints(handdrawingMovementSpeedLabel, 0, 4);
+        GridPane.setConstraints(handdrawingMovementSpeedLabel, 0, 5);
 
         TextField handdrawingMovementSpeedTextField = new TextField(String.valueOf(SettingsHandler.HANDDRAWING_MOVEMENT_SPEED));
         // force the field to be numeric only
@@ -149,14 +168,14 @@ public class SettingsBox {
                 handdrawingMovementSpeedTextField.setText(oldValue);
             }
         });
-        GridPane.setConstraints(handdrawingMovementSpeedTextField, 1, 4);
+        GridPane.setConstraints(handdrawingMovementSpeedTextField, 1, 5);
 
         /*
          * Serial connection timeout
          */
         Label serialConnectionTimeoutLabel = new Label("Serial connection timeout:");
         handdrawingMovementSpeedLabel.setMinWidth(fontLoader.computeStringWidth(serialConnectionTimeoutLabel.getText(), serialConnectionTimeoutLabel.getFont()));
-        GridPane.setConstraints(serialConnectionTimeoutLabel, 0, 5);
+        GridPane.setConstraints(serialConnectionTimeoutLabel, 0, 6);
 
         TextField serialConnectionTimeoutTextField = new TextField(String.valueOf(SettingsHandler.SERIAL_CONNECTION_TIMEOUT));
         // force the field to be numeric only
@@ -168,14 +187,14 @@ public class SettingsBox {
                 serialConnectionTimeoutTextField.setText(oldValue);
             }
         });
-        GridPane.setConstraints(serialConnectionTimeoutTextField, 1, 5);
+        GridPane.setConstraints(serialConnectionTimeoutTextField, 1, 6);
 
         /*
          * Serial connection commands sent per second
          */
         Label serialConnectionCommandsSentPerSecondLabel = new Label("Commands sent per second:");
         serialConnectionCommandsSentPerSecondLabel.setMinWidth(fontLoader.computeStringWidth(serialConnectionCommandsSentPerSecondLabel.getText(), serialConnectionCommandsSentPerSecondLabel.getFont()));
-        GridPane.setConstraints(serialConnectionCommandsSentPerSecondLabel, 0, 6);
+        GridPane.setConstraints(serialConnectionCommandsSentPerSecondLabel, 0, 7);
 
         TextField serialConnectionCommandsSentPerSecondTextField = new TextField(String.valueOf(SettingsHandler.SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND));
         // force the field to be numeric only
@@ -187,7 +206,7 @@ public class SettingsBox {
                 serialConnectionCommandsSentPerSecondTextField.setText(oldValue);
             }
         });
-        GridPane.setConstraints(serialConnectionCommandsSentPerSecondTextField, 1, 6);
+        GridPane.setConstraints(serialConnectionCommandsSentPerSecondTextField, 1, 7);
 
 
 
@@ -197,12 +216,13 @@ public class SettingsBox {
 
 
         Button save = new Button("Save and close");
-        GridPane.setConstraints(save, 1, 7);
+        GridPane.setConstraints(save, 1, 8);
         save.setOnAction(event -> {
             SettingsHandler.PORT = allPorts.get(portComboBox.getSelectionModel().getSelectedIndex());
             SettingsHandler.PREVIEW_IMAGE_MAX_WIDTH = prevImgWidthTextField.getText().equalsIgnoreCase("") ? 650 : Integer.parseInt(prevImgWidthTextField.getText());
             SettingsHandler.PREVIEW_IMAGE_MAX_HEIGHT = prevImgHeightTextField.getText().equalsIgnoreCase("") ? 750 : Integer.parseInt(prevImgHeightTextField.getText());
-            SettingsHandler.PRINT_SCALE = printImgScaleTextField.getText().equalsIgnoreCase("") ? 0.5 : Double.parseDouble(printImgScaleTextField.getText());
+            SettingsHandler.PRINT_IMAGE_MAX_WIDTH = printImgWidthTextField.getText().equalsIgnoreCase("") ? 1000 : Integer.parseInt(printImgWidthTextField.getText());
+            SettingsHandler.PRINT_IMAGE_MAX_HEIGHT = printImgHeightTextField.getText().equalsIgnoreCase("") ? 1000 : Integer.parseInt(printImgHeightTextField.getText());
             SettingsHandler.HANDDRAWING_MOVEMENT_SPEED = handdrawingMovementSpeedTextField.getText().equalsIgnoreCase("") ? 1.2 : Double.parseDouble(handdrawingMovementSpeedTextField.getText());
             SettingsHandler.SERIAL_CONNECTION_TIMEOUT = serialConnectionTimeoutTextField.getText().equalsIgnoreCase("") ? 2000 : Integer.parseInt(serialConnectionTimeoutTextField.getText());
             SettingsHandler.SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = serialConnectionCommandsSentPerSecondTextField.getText().equalsIgnoreCase("") ? 20 : Integer.parseInt(serialConnectionCommandsSentPerSecondTextField.getText());
@@ -213,8 +233,8 @@ public class SettingsBox {
 
         // Add everything to grid
         grid.getChildren().addAll(portLabel, portComboBox, prevImgWidthLabel, prevImgWidthTextField, prevImgHeightLabel, prevImgHeightTextField,
-                printImgScaleLabel, printImgScaleTextField, handdrawingMovementSpeedLabel, handdrawingMovementSpeedTextField,
-                serialConnectionTimeoutLabel, serialConnectionTimeoutTextField,
+                printImgWidthLabel, printImgWidthTextField, printImgHeightLabel, printImgHeightTextField,
+                handdrawingMovementSpeedLabel, handdrawingMovementSpeedTextField, serialConnectionTimeoutLabel, serialConnectionTimeoutTextField,
                 serialConnectionCommandsSentPerSecondLabel, serialConnectionCommandsSentPerSecondTextField, save);
 
 
