@@ -33,6 +33,10 @@ import java.io.File;
 
 public class Main extends Application {
 
+    /**
+     * y-Achse spiegeln
+     */
+
     public static boolean isUIDisabled = false;
 
     public static final boolean DEBUG = true;
@@ -268,8 +272,8 @@ public class Main extends Application {
                 File laptop = new File("C:\\Users\\prinz\\ownCloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources");
                 File computer = new File("F:\\owncloud\\Technikum\\BEL4\\EZB Echtzeitbetriebssysteme\\Tasks\\Projekt\\ProjectGUI\\src\\main\\resources");
                 File file;
-                if(laptop.exists()) file = new File(laptop, "\\FH_Technikum_Wien_logo.hpgl");
-                else file = new File(computer, "\\FH_Technikum_Wien_logo.hpgl");
+                if(laptop.exists()) file = new File(laptop, "\\FH_Technikum_Wien_logo_low_res.hpgl");
+                else file = new File(computer, "\\FH_Technikum_Wien_logo_low_res.hpgl");
 
                 try {
 

@@ -93,4 +93,10 @@ public class Command {
         result = 31 * result + y;
         return result;
     }
+
+    public Command subtract(Command previousCommand) {
+        this.x -= previousCommand.getX();
+        this.y -= previousCommand.getY();
+        return this;
+    }
 }

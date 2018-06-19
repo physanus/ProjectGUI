@@ -15,11 +15,11 @@ public class SettingsHandler {
     public static CommPortIdentifier PORT;
     public static int PREVIEW_IMAGE_MAX_WIDTH = 650;
     public static int PREVIEW_IMAGE_MAX_HEIGHT = 750;
-    public static int PRINT_IMAGE_MAX_WIDTH = 200;
-    public static int PRINT_IMAGE_MAX_HEIGHT = 200;
+    public static int PRINT_IMAGE_MAX_WIDTH = 15500;
+    public static int PRINT_IMAGE_MAX_HEIGHT = 6500;
     public static double HANDDRAWING_MOVEMENT_SPEED = 1.2;
     public static int SERIAL_CONNECTION_TIMEOUT = 2000;
-    public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 20;
+    public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 8;
 
 
 

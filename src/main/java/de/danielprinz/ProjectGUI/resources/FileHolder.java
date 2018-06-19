@@ -64,8 +64,20 @@ public class FileHolder {
                 command.scale(scaleXPrint, scaleYPrint);
             }
 
-            if(previousCommand == null || !previousCommand.equals(command))
+            // scales for the hardware since x is twice as small
+            command.scale(1, 0.5);
+
+            // TODO remove
+            command.scale(10, 10);
+
+            System.out.println(command);
+            System.out.println(previousCommand == null ? "" : command.copy().subtract(previousCommand));
+            System.out.println();
+
+            if(previousCommand == null)
                 this.serializedCommandsScaledPrint.add(command);
+            else if(!previousCommand.equals(command))
+                this.serializedCommandsScaledPrint.add(command.copy().subtract(previousCommand));
 
             previousCommand = command;
         }
