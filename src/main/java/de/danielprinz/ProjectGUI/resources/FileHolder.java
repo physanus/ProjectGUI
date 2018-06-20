@@ -58,7 +58,11 @@ public class FileHolder {
         serializedCommandsScaledPrint = new SerializedCommands();
         Command previousCommand = null;
         for(Command command : this.serializedCommands.getValues()) {
-            command = command.copy();
+
+            // flip y-axis
+            /*command = command.copy();
+            command.setY(imageHeight - command.getY());*/
+
             if(scaleXPrint < 1 || scaleYPrint < 1) {
                 // update the scale
                 command.scale(scaleXPrint, scaleYPrint);
@@ -70,14 +74,21 @@ public class FileHolder {
             // TODO remove
             command.scale(10, 10);
 
-            System.out.println(command);
-            System.out.println(previousCommand == null ? "" : command.copy().subtract(previousCommand));
-            System.out.println();
-
-            if(previousCommand == null)
+            if(previousCommand == null) {
+                /*Command xCommand = new Command(command.getCommandType(), command.getX(), 0);
+                Command yCommand = new Command(command.getCommandType(), 0, command.getY());
+                this.serializedCommandsScaledPrint.add(xCommand);
+                this.serializedCommandsScaledPrint.add(yCommand);*/
                 this.serializedCommandsScaledPrint.add(command);
-            else if(!previousCommand.equals(command))
-                this.serializedCommandsScaledPrint.add(command.copy().subtract(previousCommand));
+            }
+            else if(!previousCommand.equals(command)) {
+                Command commandToSend = command.copy().subtract(previousCommand);
+                /*Command xCommand = new Command(commandToSend.getCommandType(), commandToSend.getX(), 0);
+                Command yCommand = new Command(commandToSend.getCommandType(), 0, commandToSend.getY());
+                this.serializedCommandsScaledPrint.add(xCommand);
+                this.serializedCommandsScaledPrint.add(yCommand);*/
+                this.serializedCommandsScaledPrint.add(commandToSend);
+            }
 
             previousCommand = command;
         }

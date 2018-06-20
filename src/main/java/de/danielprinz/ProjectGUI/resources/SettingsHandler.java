@@ -19,7 +19,7 @@ public class SettingsHandler {
     public static int PRINT_IMAGE_MAX_HEIGHT = 6500;
     public static double HANDDRAWING_MOVEMENT_SPEED = 1.2;
     public static int SERIAL_CONNECTION_TIMEOUT = 2000;
-    public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 8;
+    public static int SERIAL_CONNECTION_COMMANDS_SENT_PER_SECOND = 2;
 
 
 

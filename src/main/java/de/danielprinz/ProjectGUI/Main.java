@@ -35,11 +35,12 @@ public class Main extends Application {
 
     /**
      * y-Achse spiegeln
+     *
      */
 
     public static boolean isUIDisabled = false;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private final static int WINDOW_WIDTH = 800;
     private final static int WINDOW_HEIGHT = 860;
